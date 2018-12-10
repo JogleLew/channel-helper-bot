@@ -1,0 +1,12 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+""" Channel Helper Bot """
+""" helper_const.py """
+""" Copyright 2018, Jogle Lew """
+
+BOT_TOKEN = 'Bot Token Here'
+BOT_OWNER = [Bot Owner 1 UserID, Bot Owner 2 UserID]
+MIN_REFRESH_INTERVAL = 5
+MODULE_NAME = ['start_cmd', 'help_cmd', 'cancel_cmd', 'sql_cmd', 'register_cmd', 'option_cmd', 'channel_msg', 'private_msg', 'callback_query']
+DATABASE_DIR = "."
