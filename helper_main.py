@@ -10,7 +10,10 @@ import traceback
 import importlib
 import helper_global
 import telegram
+import telegram.bot
+from telegram.ext import messagequeue as mq
 from telegram.ext import Updater, CommandHandler
+from telegram.utils.request import Request
 
 # config logger
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -33,10 +36,41 @@ def reload_admin_list():
 reload_admin_list()
 
 # config bot
-bot = telegram.Bot(token=helper_const.BOT_TOKEN)
+class MQBot(telegram.bot.Bot):
+    '''A subclass of Bot which delegates send method handling to MQ'''
+    def __init__(self, *args, is_queued_def=True, mqueue=None, **kwargs):
+        super(MQBot, self).__init__(*args, **kwargs)
+        # below 2 attributes should be provided for decorator usage
+        self._is_messages_queued_default = is_queued_def
+        self._msg_queue = mqueue or mq.MessageQueue()
+
+    def __del__(self):
+        try:
+            self._msg_queue.stop()
+        except:
+            pass
+        super(MQBot, self).__del__()
+
+    @mq.queuedmessage
+    def send_message(self, *args, **kwargs):
+        '''Wrapped method would accept new `queued` and `isgroup`
+        OPTIONAL arguments'''
+        return super(MQBot, self).send_message(*args, **kwargs)
+
+    @mq.queuedmessage
+    def edit_message_text(self, *args, **kwargs):
+        '''Wrapped method would accept new `queued` and `isgroup`
+        OPTIONAL arguments'''
+        return super(MQBot, self).edit_message_text(*args, **kwargs)
+
+
+q = mq.MessageQueue(all_burst_limit=3, all_time_limit_ms=3000)
+request = Request(con_pool_size=8)
+bot = MQBot(token=helper_const.BOT_TOKEN, request=request, mqueue=q)
 bot_username = bot.get_me().username
+helper_global.value('bot', bot)
 helper_global.value('bot_username', bot_username)
-updater = Updater(token=helper_const.BOT_TOKEN)
+updater = Updater(bot=bot)
 dispatcher = updater.dispatcher
 
 
