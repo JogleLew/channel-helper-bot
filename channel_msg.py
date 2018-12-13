@@ -7,6 +7,7 @@
 import helper_const
 import helper_global
 import helper_database
+import telegram
 from telegram.ext import MessageHandler, Filters, BaseFilter
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
@@ -24,11 +25,18 @@ def add_comment(bot, chat_id, message_id):
     ]]
     motd_markup = InlineKeyboardMarkup(motd_keyboard)
 
+    config = helper_database.get_channel_config(chat_id)
+    if config is None:
+        return
+    recent = config[3]
+    records = helper_database.get_recent_records(chat_id, message_id, recent)
+
     comment_message = bot.send_message(
         chat_id=chat_id, 
-        text=helper_global.value("comment_header", "=== Comments ===") + "\n" + helper_global.value("comment_empty", "Nothing"), 
+        text=helper_global.records_to_str(records), 
         reply_to_message_id=message_id,
         reply_markup=motd_markup, 
+        parse_mode=telegram.ParseMode.HTML
     )
     helper_database.add_reflect(chat_id, message_id, comment_message.message_id)
 
