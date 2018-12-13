@@ -91,6 +91,9 @@ def update_config_by_channel(channel_id, item, value):
 
 
 def add_reflect(chat_id, msg_id, comment_id):
+    script = "DELETE FROM reflect WHERE chat_id = ? AND msg_id = ?"
+    params = [str(chat_id), str(msg_id)]
+    execute(script, params)
     script = "INSERT INTO reflect VALUES (?, ?, ?)"
     params = [str(chat_id), str(msg_id), str(comment_id)]
     execute(script, params)
