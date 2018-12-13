@@ -92,7 +92,7 @@ def update_comments(bot, channel_id, msg_id):
 def update_dirty_list():
     lock.acquire()
     dirty_list = helper_global.value("dirty_list", [])
-    bot = helper_global.value("bot", None)
+    bot = telegram.Bot(token=helper_const.BOT_TOKEN)
     for item in dirty_list:
         channel_id, msg_id = item
         threading.Thread(
