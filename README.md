@@ -53,7 +53,7 @@ Channel Helper Bot 并不满足于只服务一个频道。任何人都可以通�
 | 配置项目             | 类型          | 含义                                             
 |----------------------|---------------|--------------------------------------------------
 | BOT_TOKEN            | (str)         | Telegram Bot 的 token                            
-| BOT_OWNER            | (list of str) | bot 管理员的 userID                              
+| BOT_OWNER            | (list of int) | bot 管理员的 userID                              
 | MIN_REFRESH_INTERVAL | (int)         | 最小刷新时间间隔                                 
 | MODULE_NAME          | (list of str) | 启用的模块名称（如无特殊需求，则不需要更改这项） 
 | DATABASEW_DIR        | (str)         | 数据库存放位置                             
