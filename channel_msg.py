@@ -37,7 +37,7 @@ def add_comment(bot, chat_id, message_id):
         reply_to_message_id=message_id,
         reply_markup=motd_markup, 
         parse_mode=telegram.ParseMode.HTML
-    )
+    ).result()
     helper_database.add_reflect(chat_id, message_id, comment_message.message_id)
 
 
