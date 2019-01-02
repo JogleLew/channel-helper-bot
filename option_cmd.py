@@ -26,7 +26,7 @@ def option(bot, update):
     #Prepare keyboard
     motd_keyboard = [[
         InlineKeyboardButton(
-            "@" + record[1],
+            "@" + record[1] if record[1] else "id: " + str(record[0]),
             callback_data="option,%s" % record[0]
         )
     ] for record in records] + [[
