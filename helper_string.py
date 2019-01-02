@@ -17,7 +17,7 @@ helper_string = {
     "add_comment": "添加评论",
     "show_all_comments": "显示所有评论",
     "comment_header": "===== 评论区 =====",
-    "comment_empty": "空空如也",
+    "comment_empty": "",
     "start_comment_mode": "您已进入评论模式，向我发送消息即可进行评论。使用 /cancel 命令可以中止评论模式。",
     "stop_comment_mode": "您已退出评论模式",
     "comment_success": "评论成功",

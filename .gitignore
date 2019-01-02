@@ -99,3 +99,4 @@ ENV/
 *.db
 
 helper_const.py
+nohup.out
