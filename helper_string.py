@@ -32,6 +32,7 @@ helper_string = {
     "register_cmd_no_info": "本 bot 无法获取您的频道信息，请检查是否已经将本 bot 添加为频道管理员。",
     "register_cmd_failed": "您的频道信息可能已被记录，如有问题请联系管理员 @JogleLew",
     "register_cmd_success": "您的频道信息已成功记录，并启用了默认的评论设置。如需修改配置，请使用 /option 命令。",
+    "register_delete_info": "感谢您使用本 bot ！检测您已经将本 bot 移出您的频道，我们已删除您的频道登记信息。如需继续使用请重新执行 /register 登记操作。",
     "option_no_channel": "您还没有登记过频道信息，请先使用 /register 命令完成登记。",
     "option_finish": "完成配置",
     "option_finished": "配置已完成",

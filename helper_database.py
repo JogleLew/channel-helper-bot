@@ -78,6 +78,20 @@ def get_channel_config(chat_id):
     return result[0]
 
 
+def delete_channel_config(chat_id):
+    script = "DELETE FROM config WHERE chat_id = ?"
+    params = [str(chat_id)]
+    result = list(execute(script, params))
+    return result
+
+
+def get_all_channel_config():
+    script = "SELECT * FROM config"
+    params = []
+    result = list(execute(script, params))
+    return result
+
+
 def add_channel_config(channel_id, lang, mode, recent, channel_username, admin_id):
     script = "INSERT INTO config VALUES (?, ?, ?, ?, ?, ?)"
     params = [str(channel_id), lang, mode, recent, channel_username, str(admin_id)]

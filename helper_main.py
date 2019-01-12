@@ -8,7 +8,9 @@ import json
 import logging
 import traceback
 import importlib
+import datetime
 import helper_global
+import helper_database
 import telegram
 import telegram.bot
 from telegram.ext import messagequeue as mq
@@ -72,6 +74,7 @@ helper_global.value('bot', bot)
 helper_global.value('bot_username', bot_username)
 updater = Updater(bot=bot)
 dispatcher = updater.dispatcher
+job_queue = updater.job_queue
 
 
 def check_admin(check_id):
@@ -127,6 +130,24 @@ for module_name in helper_const.MODULE_NAME:
     current_module = importlib.import_module(module_name)
     command_module.append(current_module)
     dispatcher.add_handler(current_module._handler)
+
+# check whether bot is in channel every day at 0:00
+def check_channel_access(bot, job):
+    configs = helper_database.get_all_channel_config()
+    for config in configs:
+        channel_id = int(config[0])
+        admin_id = int(config[5])
+        try:
+            chat_members = bot.get_chat_administrators(chat_id=channel_id)
+        except:
+            helper_database.delete_channel_config(channel_id)
+            try:
+                bot.send_message(chat_id=admin_id, text=helper_global.value("register_delete_info", ""))
+            except:
+                pass
+
+
+job_queue.run_daily(check_channel_access, datetime.time(0, 0))
 
 updater.start_polling()
 
