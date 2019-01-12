@@ -46,7 +46,9 @@ def init_database(filepath):
             type        text,
             content     text,
             media_id    text,
-            date        text
+            date        text,
+            user_id     text,
+            ori_msg_id  text
         );
         """
     )
@@ -113,10 +115,20 @@ def add_reflect(chat_id, msg_id, comment_id):
     execute(script, params)
 
 
-def add_record(channel_id, msg_id, username, name, msg_type, msg_content, media_id, date):
-    script = "INSERT INTO record VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
-    params = [str(channel_id), str(msg_id), username, name, msg_type, msg_content, media_id, date]
-    execute(script, params)
+def add_record(channel_id, msg_id, username, name, msg_type, msg_content, media_id, date, user_id, ori_msg_id):
+    script = "SELECT * FROM record WHERE user_id = ? AND ori_msg_id = ?"
+    params = [str(user_id), str(ori_msg_id)]
+    result = list(execute(script, params))
+    if len(result) == 0:
+        script = "INSERT INTO record VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+        params = [str(channel_id), str(msg_id), username, name, msg_type, msg_content, media_id, date, str(user_id), str(ori_msg_id)]
+        execute(script, params)
+        return 0
+    else:
+        script = "UPDATE record SET type = ?, content = ?, media_id = ? WHERE user_id = ? AND ori_msg_id = ?"
+        params = [msg_type, msg_content, media_id, str(user_id), str(ori_msg_id)]
+        execute(script, params)
+        return 1
 
 
 def get_comment_id(channel_id, msg_id):

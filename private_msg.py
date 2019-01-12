@@ -13,8 +13,10 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import MessageHandler, Filters
 
 def add_record(channel_id, msg_id, message):
+    ori_msg_id = message.message_id
     user = message.from_user
     username = user.username
+    user_id = user.id
     name = user.first_name
     if user.last_name:
         name += " " + user.last_name
@@ -55,7 +57,7 @@ def add_record(channel_id, msg_id, message):
         msg_type = 'voice'
         media_id = message.voice.file_id
 
-    helper_database.add_record(channel_id, msg_id, username, name, msg_type, msg_content, media_id, date)
+    return helper_database.add_record(channel_id, msg_id, username, name, msg_type, msg_content, media_id, date, user_id, ori_msg_id)
 
 
 def update_comments(bot, channel_id, msg_id):
@@ -146,7 +148,7 @@ def check_channel_message(bot, message):
 
 
 def private_msg(bot, update):
-    message = update.message
+    message = update.edited_message if update.edited_message else update.message
     # print(message)
     chat_id = message.chat_id
 
@@ -159,7 +161,7 @@ def private_msg(bot, update):
             check_channel_message(bot, message)
         return
 
-    add_record(channel_id, msg_id, message)
+    result = add_record(channel_id, msg_id, message)
 
     # Update Dirty List
     lock.acquire()
@@ -169,7 +171,10 @@ def private_msg(bot, update):
     helper_global.assign("dirty_list", dirty_list)
     lock.release()
 
-    bot.send_message(chat_id=chat_id, text=helper_global.value("comment_success", "Success!"))
+    if result == 0:
+        bot.send_message(chat_id=chat_id, text=helper_global.value("comment_success", "Success!"))
+    elif result == 1:
+        bot.send_message(chat_id=chat_id, text=helper_global.value("comment_edit_success", "Success!"))
 
 
 def set_interval(func, sec):
@@ -186,4 +191,4 @@ if not refresh_status:
     set_interval(update_dirty_list, helper_const.MIN_REFRESH_INTERVAL)
     helper_global.assign("refresh_status", True)
 lock = threading.Lock()
-_handler = MessageHandler(Filters.private, private_msg)
+_handler = MessageHandler(Filters.private, private_msg, edited_updates=True)

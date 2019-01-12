@@ -45,7 +45,10 @@ def records_to_str(records):
         return s
     records = records[::-1]
     for record in records:
-        _, _, username, name, msg_type, msg_content, _, _ = record
+        username = record[2]
+        name = record[3]
+        msg_type = record[4]
+        msg_content = record[5]
         s += ("<b>%s</b>: " % name)
         if not msg_type == "text":
             s += ("[%s] " % msg_type)
