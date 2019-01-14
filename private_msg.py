@@ -119,7 +119,7 @@ def check_channel_message(bot, message):
     user_id = message.from_user.id
     bot_id = int(helper_const.BOT_TOKEN.split(":")[0])
     try:
-        chat_members = bot.get_chat_administrators(chat_id=channel_id)
+        chat_members = bot.get_chat_administrators(chat_id=channel_id).result()
         chat_member_ids = [member.user.id for member in chat_members]
         if not user_id in chat_member_ids:
             bot.send_message(chat_id=chat_id, text=helper_global.value("register_cmd_not_admin", ""))
