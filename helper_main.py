@@ -65,7 +65,13 @@ class MQBot(telegram.bot.Bot):
         OPTIONAL arguments'''
         return super(MQBot, self).edit_message_text(*args, **kwargs)
  
+    @mq.queuedmessage
+    def get_chat_administrators(self, *args, **kwargs):
+        '''Wrapped method would accept new `queued` and `isgroup`
+        OPTIONAL arguments'''
+        return super(MQBot, self).get_chat_administrators(*args, **kwargs)
  
+
 q = mq.MessageQueue(all_burst_limit=3, all_time_limit_ms=3000)
 request = Request(con_pool_size=8)
 bot = MQBot(token=helper_const.BOT_TOKEN, request=request, mqueue=q)
@@ -131,23 +137,6 @@ for module_name in helper_const.MODULE_NAME:
     command_module.append(current_module)
     dispatcher.add_handler(current_module._handler)
 
-# check whether bot is in channel every day at 0:00
-def check_channel_access(bot, job):
-    configs = helper_database.get_all_channel_config()
-    for config in configs:
-        channel_id = int(config[0])
-        admin_id = int(config[5])
-        try:
-            chat_members = bot.get_chat_administrators(chat_id=channel_id)
-        except:
-            helper_database.delete_channel_config(channel_id)
-            try:
-                bot.send_message(chat_id=admin_id, text=helper_global.value("register_delete_info", ""))
-            except:
-                pass
-
-
-job_queue.run_daily(check_channel_access, datetime.time(0, 0))
 
 updater.start_polling()
 

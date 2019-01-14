@@ -42,7 +42,10 @@ helper_string = {
     "option_choose_mode_value": "本 bot 有两种工作模式\n模式 0: 手动模式。当频道中新增消息时，bot 不会自动创建评论消息。当频道管理员使用 /comment 回复需要评论的原始消息时，bot 才会创建评论消息。如果 /comment 命令不起作用，请检查是否授予 bot 删除消息的权限。\n模式 1: 自动模式。当频道中新增消息时，bot 自动创建评论消息。\n请选择您所需要的工作模式：",
     "option_choose_recent_value": "在频道中仅显示最近的若干条消息。请选择频道显示的最近条目数量：",
     "option_update_success": "配置更新成功",
-    "option_update_failed": "配置更新失败"
+    "option_update_failed": "配置更新失败",
+    "clean_cmd_start": "正在进行检查，请稍候...",
+    "clean_cmd_deleted": "删除记录成功",
+    "clean_cmd_set": "设置成功"
 }
 
 for item, value in helper_string.items():

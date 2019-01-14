@@ -43,7 +43,7 @@ def add_comment(bot, chat_id, message_id):
 
 def channel_post_msg(bot, update):
     message = update.channel_post
-    print("Channel ID: %d, Channel Username: %s" % (message.chat_id, message.chat.username))
+    # print("Channel ID: %d, Channel Username: %s" % (message.chat_id, message.chat.username))
     chat_id = message.chat_id
     message_id = message.message_id
     config = helper_database.get_channel_config(chat_id)
