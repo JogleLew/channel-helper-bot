@@ -76,6 +76,11 @@ def option_item(bot, chat_id, origin_message_id, args):
         )
     ]] + [[
         InlineKeyboardButton(
+            helper_global.value("option_delete", ""),
+            callback_data="option_delete,%s" % args[1]
+        )
+    ]] + [[
+        InlineKeyboardButton(
             helper_global.value("option_finish", ""),
             callback_data="option_finish"
         )
@@ -155,6 +160,16 @@ def option_recent(bot, chat_id, origin_message_id, args):
     )
 
 
+def option_delete(bot, chat_id, origin_message_id, args):
+    channel_id = args[1]
+    helper_database.delete_channel_config(channel_id)
+    bot.edit_message_text(
+        chat_id=chat_id, 
+        message_id=origin_message_id,
+        text=helper_global.value("option_record_deleted", "")
+    )
+
+
 def option_update(bot, update, chat_id, origin_message_id, args):
     try:
         helper_database.update_config_by_channel(args[1], args[2], args[3])
@@ -177,6 +192,8 @@ def callback_query(bot, update):
     args = callback_data.split(',')
     if args[0] == 'msg':
         show_msg(bot, update, origin_message_id, chat_id, args);
+    elif args[0] == 'option_delete':
+        option_delete(bot, chat_id, origin_message_id, args)
     elif args[0] == 'option_finish':
         option_fiinish(bot, chat_id, origin_message_id)
     elif args[0] == 'option':

@@ -35,6 +35,8 @@ helper_string = {
     "register_cmd_success": "您的频道信息已成功记录，并启用了默认的评论设置。如需修改配置，请使用 /option 命令。",
     "register_delete_info": "感谢您使用本 bot ！检测您已经将本 bot 移出您的频道，我们已删除您的频道登记信息。如需继续使用请重新执行 /register 登记操作。",
     "option_no_channel": "您还没有登记过频道信息，请先使用 /register 命令完成登记。",
+    "option_delete": "删除频道记录",
+    "option_record_deleted": "频道记录已删除，感谢您的使用！",
     "option_finish": "完成配置",
     "option_finished": "配置已完成",
     "option_choose_channel": "请选择一个频道以进行配置",
