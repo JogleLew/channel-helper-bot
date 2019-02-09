@@ -66,6 +66,12 @@ class MQBot(telegram.bot.Bot):
         return super(MQBot, self).edit_message_text(*args, **kwargs)
  
     @mq.queuedmessage
+    def edit_message_reply_markup(self, *args, **kwargs):
+        '''Wrapped method would accept new `queued` and `isgroup`
+        OPTIONAL arguments'''
+        return super(MQBot, self).edit_message_reply_markup(*args, **kwargs)
+
+    @mq.queuedmessage
     def get_chat_administrators(self, *args, **kwargs):
         '''Wrapped method would accept new `queued` and `isgroup`
         OPTIONAL arguments'''

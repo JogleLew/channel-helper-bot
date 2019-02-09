@@ -106,6 +106,10 @@ def option_mode(bot, chat_id, origin_message_id, args):
         InlineKeyboardButton(
             "1",
             callback_data="option,%s,mode,1" % args[1]
+        ),
+        InlineKeyboardButton(
+            "2",
+            callback_data="option,%s,mode,2" % args[1]
         )
     ]] + [[
         InlineKeyboardButton(

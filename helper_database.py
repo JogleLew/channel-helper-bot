@@ -115,6 +115,15 @@ def add_reflect(chat_id, msg_id, comment_id):
     execute(script, params)
 
 
+def check_reflect(chat_id, msg_id):
+    script = "SELECT * FROM reflect WHERE chat_id = ? AND msg_id = ?"
+    params = [str(chat_id), str(msg_id)]
+    result = list(execute(script, params))
+    if len(result) == 0:
+        return False
+    return True
+
+
 def add_record(channel_id, msg_id, username, name, msg_type, msg_content, media_id, date, user_id, ori_msg_id):
     script = "SELECT * FROM record WHERE user_id = ? AND ori_msg_id = ?"
     params = [str(user_id), str(ori_msg_id)]

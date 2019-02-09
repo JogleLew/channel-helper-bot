@@ -41,6 +41,30 @@ def add_comment(bot, chat_id, message_id):
     helper_database.add_reflect(chat_id, message_id, comment_message.message_id)
 
 
+def add_compact_comment(bot, chat_id, message_id):
+    # Prepare Keyboard
+    motd_keyboard = [[
+        InlineKeyboardButton(
+            helper_global.value("add_comment", "Add Comment"),
+            url="http://telegram.me/%s?start=add_%d_%d" % (helper_global.value('bot_username', ''), chat_id, message_id)
+        ), 
+        InlineKeyboardButton(
+            helper_global.value("show_all_comments", "Show All"),
+            url="http://telegram.me/%s?start=show_%s_%d" % (helper_global.value('bot_username', ''), chat_id, message_id)
+        )
+    ]]
+    motd_markup = InlineKeyboardMarkup(motd_keyboard)
+
+    try:
+        bot.edit_message_reply_markup(
+            chat_id=chat_id,
+            message_id=message_id,
+            reply_markup=motd_markup
+        ).result()
+    except:
+        add_comment(bot, chat_id, message_id)
+
+
 def channel_post_msg(bot, update):
     message = update.channel_post
     # print("Channel ID: %d, Channel Username: %s" % (message.chat_id, message.chat.username))
@@ -54,12 +78,14 @@ def channel_post_msg(bot, update):
     # Auto Comment Mode
     if mode == 1: 
         add_comment(bot, chat_id, message_id)
+    elif mode == 2:
+        add_compact_comment(bot, chat_id, message_id)
 
     # Manual Mode
     elif mode == 0 and message.reply_to_message is not None and message.text == "/comment":
         message_id = message.reply_to_message.message_id
         bot.delete_message(chat_id=chat_id, message_id=message.message_id)
-        add_comment(bot, chat_id, message_id)
+        add_compact_comment(bot, chat_id, message_id)
 
 
 class FilterChannelPost(BaseFilter):

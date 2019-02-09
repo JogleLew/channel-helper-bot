@@ -66,6 +66,7 @@ def update_comments(bot, channel_id, msg_id):
     config = helper_database.get_channel_config(channel_id)
     if config is None:
         return
+    mode = config[2]
     recent = config[3]
     records = helper_database.get_recent_records(channel_id, msg_id, recent)
 
@@ -160,6 +161,28 @@ def private_msg(bot, update):
         if msg_id == 1:
             check_channel_message(bot, message)
         return
+
+    # Check comment message
+    comment_exist = helper_database.check_reflect(channel_id, msg_id)
+    if not comment_exist:
+        config = helper_database.get_channel_config(channel_id)
+        if config is None:
+            return
+        recent = config[3]
+        records = helper_database.get_recent_records(channel_id, msg_id, recent)
+
+        comment_message = bot.send_message(
+            chat_id=channel_id, 
+            text=helper_global.records_to_str(records), 
+            reply_to_message_id=msg_id,
+            parse_mode=telegram.ParseMode.HTML
+        ).result()
+        helper_database.add_reflect(channel_id, msg_id, comment_message.message_id)
+        bot.edit_message_reply_markup(
+            chat_id=channel_id,
+            message_id=msg_id,
+            reply_markup=None
+        )
 
     result = add_record(channel_id, msg_id, message)
 
