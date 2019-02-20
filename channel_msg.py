@@ -41,7 +41,7 @@ def add_comment(bot, chat_id, message_id):
     helper_database.add_reflect(chat_id, message_id, comment_message.message_id)
 
 
-def add_compact_comment(bot, chat_id, message_id):
+def add_compact_comment(bot, chat_id, message_id, message):
     # Prepare Keyboard
     motd_keyboard = [[
         InlineKeyboardButton(
@@ -55,7 +55,18 @@ def add_compact_comment(bot, chat_id, message_id):
     ]]
     motd_markup = InlineKeyboardMarkup(motd_keyboard)
 
+    # Avoid duplicated comment for media group
+    if message.media_group_id:
+        last_media_group = helper_global.value(str(chat_id) + '_last_media_group', '0')
+        if last_media_group == message.media_group_id:
+            return
+        helper_global.assign(str(chat_id) + '_last_media_group', message.media_group_id)
+        add_comment(bot, chat_id, message_id)
+        return
+
     try:
+        if message.forward_from or message.forward_from_chat:
+            pass
         bot.edit_message_reply_markup(
             chat_id=chat_id,
             message_id=message_id,
@@ -79,13 +90,13 @@ def channel_post_msg(bot, update):
     if mode == 1: 
         add_comment(bot, chat_id, message_id)
     elif mode == 2:
-        add_compact_comment(bot, chat_id, message_id)
+        add_compact_comment(bot, chat_id, message_id, message)
 
     # Manual Mode
     elif mode == 0 and message.reply_to_message is not None and message.text == "/comment":
         message_id = message.reply_to_message.message_id
         bot.delete_message(chat_id=chat_id, message_id=message.message_id)
-        add_compact_comment(bot, chat_id, message_id)
+        add_compact_comment(bot, chat_id, message_id, message.reply_to_message)
 
 
 class FilterChannelPost(BaseFilter):
