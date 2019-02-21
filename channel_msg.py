@@ -123,7 +123,9 @@ def deforward(bot, msg):
     message_id = msg.message_id
 
     # Generate forward info
+    has_msg_link = False
     if msg.forward_from:
+        # Check username existence
         if msg.forward_from.username:
             forward_info = helper_global.value('fwd_source', 'Forwarded from:') + '@%s' % msg.forward_from.username
         else:
@@ -134,16 +136,11 @@ def deforward(bot, msg):
     elif msg.forward_from_chat:
         # Check channel public/private
         if msg.forward_from_chat.username:
-            new_msg = bot.send_message(
-                chat_id=chat_id,
-                text='https://t.me/%s/%s' % (
-                    msg.forward_from_chat.username,
-                    msg.forward_from_message_id
-                ),
-                disable_notification=True
-            ).result()
-            bot.delete_message(chat_id=chat_id, message_id=message_id)
-            return new_msg
+            forward_info = helper_global.value('fwd_source', 'Forwarded from:') + 'https://t.me/%s/%s' % (
+                msg.forward_from_chat.username,
+                msg.forward_from_message_id
+            )
+            has_msg_link = True
         else:
             forward_info = helper_global.value('fwd_source', 'Forwarded from:') + msg.forward_from_chat.title
 
@@ -156,11 +153,17 @@ def deforward(bot, msg):
 
     # Handle by message type
     if message_type == 'text':
+        has_content_link = False
+        for entity in msg.entities:
+            if entity.type == 'url' or entity.type == 'text_link':
+                has_content_link = True
+                break
         new_msg = bot.send_message(
             chat_id=chat_id,
             text=parse_entity(avoidNone(msg.text), msg.entities) + '\n\n' + forward_info,
             parse_mode='HTML',
-            disable_notification=True
+            disable_notification=True,
+            disable_web_page_preview=(not has_content_link and has_msg_link)
         ).result()
     elif message_type == 'audio': 
         new_msg = bot.send_audio(
