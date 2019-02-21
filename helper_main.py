@@ -60,6 +60,42 @@ class MQBot(telegram.bot.Bot):
         return super(MQBot, self).send_message(*args, **kwargs)
 
     @mq.queuedmessage
+    def send_audio(self, *args, **kwargs):
+        '''Wrapped method would accept new `queued` and `isgroup`
+        OPTIONAL arguments'''
+        return super(MQBot, self).send_audio(*args, **kwargs)
+
+    @mq.queuedmessage
+    def send_document(self, *args, **kwargs):
+        '''Wrapped method would accept new `queued` and `isgroup`
+        OPTIONAL arguments'''
+        return super(MQBot, self).send_document(*args, **kwargs)
+
+    @mq.queuedmessage
+    def send_photo(self, *args, **kwargs):
+        '''Wrapped method would accept new `queued` and `isgroup`
+        OPTIONAL arguments'''
+        return super(MQBot, self).send_photo(*args, **kwargs)
+
+    @mq.queuedmessage
+    def send_sticker(self, *args, **kwargs):
+        '''Wrapped method would accept new `queued` and `isgroup`
+        OPTIONAL arguments'''
+        return super(MQBot, self).send_sticker(*args, **kwargs)
+
+    @mq.queuedmessage
+    def send_video(self, *args, **kwargs):
+        '''Wrapped method would accept new `queued` and `isgroup`
+        OPTIONAL arguments'''
+        return super(MQBot, self).send_video(*args, **kwargs)
+
+    @mq.queuedmessage
+    def send_voice(self, *args, **kwargs):
+        '''Wrapped method would accept new `queued` and `isgroup`
+        OPTIONAL arguments'''
+        return super(MQBot, self).send_voice(*args, **kwargs)
+
+    @mq.queuedmessage
     def edit_message_text(self, *args, **kwargs):
         '''Wrapped method would accept new `queued` and `isgroup`
         OPTIONAL arguments'''
