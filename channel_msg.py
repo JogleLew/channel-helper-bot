@@ -43,6 +43,20 @@ def add_comment(bot, chat_id, message_id):
 
 
 def add_compact_comment(bot, chat_id, message_id, message):
+    # Avoid duplicated comment for media group
+    if message.media_group_id:
+        last_media_group = helper_global.value(str(chat_id) + '_last_media_group', '0')
+        if last_media_group == message.media_group_id:
+            return
+        helper_global.assign(str(chat_id) + '_last_media_group', message.media_group_id)
+        add_comment(bot, chat_id, message_id)
+        return
+
+    if message.forward_from or message.forward_from_chat:
+        new_message = deforward(bot, message)
+        message_id = new_message.message_id
+        message = new_message
+
     # Prepare Keyboard
     motd_keyboard = [[
         InlineKeyboardButton(
@@ -55,19 +69,6 @@ def add_compact_comment(bot, chat_id, message_id, message):
         )
     ]]
     motd_markup = InlineKeyboardMarkup(motd_keyboard)
-
-    # Avoid duplicated comment for media group
-    if message.media_group_id:
-        last_media_group = helper_global.value(str(chat_id) + '_last_media_group', '0')
-        if last_media_group == message.media_group_id:
-            return
-        helper_global.assign(str(chat_id) + '_last_media_group', message.media_group_id)
-        add_comment(bot, chat_id, message_id)
-        return
-
-    if message.forward_from or message.forward_from_chat:
-        new_message_id = deforward(bot, message)
-        message_id = new_message_id
 
     try:
         bot.edit_message_reply_markup(
@@ -85,13 +86,51 @@ def avoidNone(s):
     return ''
 
 
+def parse_entity(src, entity_list):
+    if entity_list is None or len(entity_list) == 0:
+        return src
+    head = 0
+    p_str = ""
+    for entity in entity_list:
+        begin_str = ''
+        end_str = ''
+        if entity.type == 'bold':
+            begin_str = '<b>'
+            end_str = '</b>'
+        elif entity.type == 'code':
+            begin_str = '<code>'
+            end_str = '</code>'
+        elif entity.type == 'italic':
+            begin_str = '<i>'
+            end_str = '</i>'
+        elif entity.type == 'pre':
+            begin_str = '<pre>'
+            end_str = '</pre>'
+        elif entity.type == 'text_link':
+            begin_str = '<a href="%s">' % entity.url
+            end_str = '</a>'
+        p_str += src[head:entity.offset]
+        p_str += begin_str
+        p_str += src[entity.offset:(entity.offset + entity.length)]
+        p_str += end_str
+        head = entity.offset + entity.length
+    p_str += src[head:]
+    return p_str
+
+
 def deforward(bot, msg):
     chat_id = msg.chat_id
     message_id = msg.message_id
 
     # Generate forward info
     if msg.forward_from:
-        forward_info = helper_global.value('fwd_source', 'Forwarded from:') + '@%s' % msg.forward_from.username
+        if msg.forward_from.username:
+            forward_info = helper_global.value('fwd_source', 'Forwarded from:') + '@%s' % msg.forward_from.username
+        else:
+            forward_info = helper_global.value('fwd_source', 'Forwarded from:') + '<a href="tg://user?id=%d">%s</a>' % (
+                msg.forward_from.id, 
+                msg.forward_from.first_name + " " + avoidNone(msg.forward_from.last_name)
+            )
     elif msg.forward_from_chat:
         # Check channel public/private
         if msg.forward_from_chat.username:
@@ -104,7 +143,7 @@ def deforward(bot, msg):
                 disable_notification=True
             ).result()
             bot.delete_message(chat_id=chat_id, message_id=message_id)
-            return new_msg.message_id
+            return new_msg
         else:
             forward_info = helper_global.value('fwd_source', 'Forwarded from:') + msg.forward_from_chat.title
 
@@ -113,34 +152,38 @@ def deforward(bot, msg):
 
     # Ignore media group
     if msg.media_group_id:
-        return message_id
+        return msg
 
     # Handle by message type
     if message_type == 'text':
         new_msg = bot.send_message(
             chat_id=chat_id,
-            text=avoidNone(msg.text) + '\n\n' + forward_info,
+            text=parse_entity(avoidNone(msg.text), msg.entities) + '\n\n' + forward_info,
+            parse_mode='HTML',
             disable_notification=True
         ).result()
     elif message_type == 'audio': 
         new_msg = bot.send_audio(
             chat_id=chat_id,
             audio=msg.audio.file_id,
-            caption=avoidNone(msg.caption) + '\n\n' + forward_info,
+            caption=parse_entity(avoidNone(msg.caption), msg.entities) + '\n\n' + forward_info,
+            parse_mode='HTML',
             disable_notification=True
         ).result()
     elif message_type == 'document': 
         new_msg = bot.send_document(
             chat_id=chat_id,
             document=msg.document.file_id,
-            caption=avoidNone(msg.caption) + '\n\n' + forward_info,
+            caption=parse_entity(avoidNone(msg.caption), msg.entities) + '\n\n' + forward_info,
+            parse_mode='HTML',
             disable_notification=True
         ).result()
     elif message_type == 'photo': 
         new_msg = bot.send_photo(
             chat_id=chat_id,
             photo=msg.photo[-1].file_id,
-            caption=avoidNone(msg.caption) + '\n\n' + forward_info,
+            caption=parse_entity(avoidNone(msg.caption), msg.entities) + '\n\n' + forward_info,
+            parse_mode='HTML',
             disable_notification=True
         ).result()
     elif message_type == 'sticker': 
@@ -153,20 +196,23 @@ def deforward(bot, msg):
         new_msg = bot.send_video(
             chat_id=chat_id,
             video=msg.video.file_id,
-            caption=avoidNone(msg.caption) + '\n\n' + forward_info,
+            caption=parse_entity(avoidNone(msg.caption), msg.entities) + '\n\n' + forward_info,
+            parse_mode='HTML',
             disable_notification=True
         ).result()
     elif message_type == 'voice': 
         new_msg = bot.send_voice(
             chat_id=chat_id,
             voice=msg.voice.file_id,
-            caption=avoidNone(msg.caption) + '\n\n' + forward_info,
+            caption=parse_entity(avoidNone(msg.caption), msg.entities) + '\n\n' + forward_info,
+            parse_mode='HTML',
             disable_notification=True
         ).result()
+
     if new_msg:
         bot.delete_message(chat_id=chat_id, message_id=message_id)
-        return new_msg.message_id
-    return message_id
+        return new_msg
+    return msg
     
 
 def channel_post_msg(bot, update):
