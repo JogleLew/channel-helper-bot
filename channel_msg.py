@@ -12,6 +12,8 @@ from telegram.utils.helpers import effective_message_type
 from telegram.ext import MessageHandler, Filters, BaseFilter
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
+parse_entity = helper_global.parse_entity
+
 def add_comment(bot, chat_id, message_id, media_group_id=None):
     # Avoid duplicated comment for media group
     if media_group_id:
@@ -90,36 +92,6 @@ def avoidNone(s):
     return ''
 
 
-def parse_entity(src, entity_list):
-    if entity_list is None or len(entity_list) == 0:
-        return src
-    head = 0
-    p_str = ""
-    for entity in entity_list:
-        begin_str = ''
-        end_str = ''
-        if entity.type == 'bold':
-            begin_str = '<b>'
-            end_str = '</b>'
-        elif entity.type == 'code':
-            begin_str = '<code>'
-            end_str = '</code>'
-        elif entity.type == 'italic':
-            begin_str = '<i>'
-            end_str = '</i>'
-        elif entity.type == 'pre':
-            begin_str = '<pre>'
-            end_str = '</pre>'
-        elif entity.type == 'text_link':
-            begin_str = '<a href="%s">' % entity.url
-            end_str = '</a>'
-        p_str += src[head:entity.offset]
-        p_str += begin_str
-        p_str += src[entity.offset:(entity.offset + entity.length)]
-        p_str += end_str
-        head = entity.offset + entity.length
-    p_str += src[head:]
-    return p_str
 
 
 def deforward(bot, msg):
