@@ -12,7 +12,15 @@ from telegram.utils.helpers import effective_message_type
 from telegram.ext import MessageHandler, Filters, BaseFilter
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-def add_comment(bot, chat_id, message_id):
+def add_comment(bot, chat_id, message_id, media_group_id=None):
+    # Avoid duplicated comment for media group
+    if media_group_id:
+       last_media_group = helper_global.value(str(chat_id) + '_last_media_group', '0')
+       print(last_media_group)
+       if last_media_group == media_group_id:
+           return
+       helper_global.assign(str(chat_id) + '_last_media_group', media_group_id)
+
     # Prepare Keyboard
     motd_keyboard = [[
         InlineKeyboardButton(
@@ -43,13 +51,9 @@ def add_comment(bot, chat_id, message_id):
 
 
 def add_compact_comment(bot, chat_id, message_id, message):
-    # Avoid duplicated comment for media group
+    # Fallback media group message
     if message.media_group_id:
-        last_media_group = helper_global.value(str(chat_id) + '_last_media_group', '0')
-        if last_media_group == message.media_group_id:
-            return
-        helper_global.assign(str(chat_id) + '_last_media_group', message.media_group_id)
-        add_comment(bot, chat_id, message_id)
+        add_comment(bot, chat_id, message_id, media_group_id=message.media_group_id)
         return
 
     if message.forward_from or message.forward_from_chat:
@@ -230,7 +234,7 @@ def channel_post_msg(bot, update):
 
     # Auto Comment Mode
     if mode == 1: 
-        add_comment(bot, chat_id, message_id)
+        add_comment(bot, chat_id, message_id, media_group_id=message.media_group_id)
     elif mode == 2:
         add_compact_comment(bot, chat_id, message_id, message)
 
