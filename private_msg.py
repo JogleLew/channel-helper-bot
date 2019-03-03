@@ -57,6 +57,8 @@ def add_record(channel_id, msg_id, message):
         msg_type = 'voice'
         media_id = message.voice.file_id
 
+    msg_content = msg_content.replace('<', '&lt;').replace('>', '&gt;')
+
     return helper_database.add_record(channel_id, msg_id, username, name, msg_type, msg_content, media_id, date, user_id, ori_msg_id)
 
 
