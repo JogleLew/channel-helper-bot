@@ -4,6 +4,7 @@
 """ Channel Helper Bot """
 """ clean_cmd.py """
 """ Copyright 2018, Jogle Lew """
+import json
 import datetime
 import helper_const
 import helper_global
@@ -42,6 +43,12 @@ def clean(bot, update, args, job_queue):
         invalid_list = get_invalid_channel_access(bot)
         bot.send_message(chat_id=from_id, text=helper_global.value("clean_cmd_start", ""))
         bot.send_message(chat_id=from_id, text=str(invalid_list))
+    if len(args) == 2 and args[0] == "touch":
+        channel_id = int(args[1])
+        chat_members = bot.get_chat_administrators(chat_id=channel_id).result()
+        for member in chat_members:
+            if member.user.username and member.user.username == helper_global.value('bot_username', ''):
+                bot.send_message(chat_id=from_id, text='%s %s %s' % (member.can_post_messages, member.can_edit_messages, member.can_delete_messages))
     if len(args) == 2 and args[0] == "delete":
         channel_id = int(args[1])
         helper_database.delete_channel_config(channel_id)
