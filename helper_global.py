@@ -58,7 +58,8 @@ def records_to_str(records):
 
 def parse_entity(src, entity_list):
     if entity_list is None or len(entity_list) == 0:
-        return src
+        return src.replace('<', '&lt;').replace('>', '&gt;')
+
     head = 0
     p_str = ""
     for entity in entity_list:
