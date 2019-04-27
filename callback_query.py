@@ -7,6 +7,7 @@
 import helper_const
 import helper_global
 import helper_database
+import private_msg
 import telegram
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, \
         InputMediaAudio, InputMediaDocument, InputMediaPhoto, InputMediaVideo
@@ -97,21 +98,37 @@ def msg_detail(bot, update, chat_id, origin_message_id, args):
     msg_type = record[4]
     msg_content = record[5]
     media_id= record[6]
+    user_id = int(record[8])
 
     config = helper_database.get_channel_config(channel_id)
     if config is None:
         return
     recent = config[3]
+    admin_id = config[5]
     base_offset = helper_database.get_base_offset_by_rowid(channel_id, msg_id, row_id)
     offset = base_offset // recent
 
-    motd_keyboard = [
+    msg_from_button = [
         [
             InlineKeyboardButton(
                 helper_global.value("msg_from", "Message From: ") + name,
-                callback_data="123"
+                callback_data="blank"
             )
-        ],
+        ]
+    ]
+    admin_operation_button = [
+        [
+            InlineKeyboardButton(
+                helper_global.value("delete_msg", "Delete Message"),
+                callback_data="msg_delete,%d,%d,%d,%d,%d,%d" % (row_id, channel_id, msg_id, recent, offset, chat_id)
+            ),
+            InlineKeyboardButton(
+                helper_global.value("ban_user", "Ban User"),
+                callback_data="user_ban,%d,%d,%s" % (channel_id, user_id, name)
+            )
+        ]
+    ] if str(chat_id) == str(admin_id) else []
+    motd_keyboard = msg_from_button + admin_operation_button + [
         [
             InlineKeyboardButton(
                 helper_global.value("prev_msg", "Prev Message"),
@@ -177,7 +194,7 @@ def msg_detail(bot, update, chat_id, origin_message_id, args):
         )
 
 
-def option_fiinish(bot, chat_id, origin_message_id):
+def option_finish(bot, chat_id, origin_message_id):
     bot.edit_message_text(
         chat_id=chat_id, 
         message_id=origin_message_id,
@@ -311,6 +328,24 @@ def option_update(bot, update, chat_id, origin_message_id, args):
     option_item(bot, chat_id, origin_message_id, args)
 
 
+def msg_delete(bot, update, chat_id, origin_message_id, args):
+    row_id = int(args[1])
+    channel_id = int(args[2])
+    msg_id = int(args[3])
+    msg_args = ["msg"] + args[2:]
+    helper_database.delete_record_by_rowid(row_id)
+    bot.answer_callback_query(
+        callback_query_id=update.callback_query.id,
+        text=helper_global.value("delete_success", "")
+    )
+    private_msg.update_dirty_list(channel_id, msg_id)
+    show_msg(bot, update, origin_message_id, chat_id, msg_args)
+
+
+def user_ban(bot, update, args):
+    pass
+
+
 def callback_query(bot, update):
     callback_data = update.callback_query.data
     origin_message_id = update.callback_query.message.message_id
@@ -320,6 +355,10 @@ def callback_query(bot, update):
         show_msg(bot, update, origin_message_id, chat_id, args)
     elif args[0] == 'msg_detail':
         msg_detail(bot, update, chat_id, origin_message_id, args)
+    elif args[0] == 'msg_delete':
+        msg_delete(bot, update, chat_id, origin_message_id, args)
+    elif args[0] == 'user_ban':
+        user_ban(bot, update, args)
     elif args[0] == 'option_delete':
         option_delete(bot, chat_id, origin_message_id, args)
     elif args[0] == 'option_finish':

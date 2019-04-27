@@ -173,6 +173,13 @@ def get_record_by_rowid(row_id):
     return result
 
 
+def delete_record_by_rowid(row_id):
+    script = "DELETE FROM record WHERE ROWID = ?"
+    params = [row_id]
+    result = list(execute(script, params))
+    return result
+
+
 def get_base_offset_by_rowid(channel_id, msg_id, row_id):
     script = "SELECT count(*) FROM record WHERE chat_id = ? AND msg_id = ? AND ROWID >= ?"
     params = [str(channel_id), str(msg_id), row_id]

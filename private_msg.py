@@ -202,6 +202,15 @@ def private_msg(bot, update):
         bot.send_message(chat_id=chat_id, text=helper_global.value("comment_edit_success", "Success!"))
 
 
+def update_dirty_list(channel_id, msg_id):
+    lock.acquire()
+    dirty_list = helper_global.value("dirty_list", [])
+    if not (channel_id, msg_id) in dirty_list:
+        dirty_list.append((channel_id, msg_id))
+    helper_global.assign("dirty_list", dirty_list)
+    lock.release()
+
+
 def set_interval(func, sec):
     def func_wrapper():
         set_interval(func, sec)

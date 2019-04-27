@@ -53,7 +53,10 @@ helper_string = {
     "next_msg": "下一条消息",
     "no_message_detail": "未找到消息",
     "back_to_msg_list": "返回消息列表",
-    "msg_from": "消息来源："
+    "msg_from": "消息来源：",
+    "delete_msg": "删除消息",
+    "delete_success": "消息删除成功",
+    "ban_user": "封禁用户"
 }
 
 for item, value in helper_string.items():
