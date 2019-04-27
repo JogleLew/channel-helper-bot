@@ -52,6 +52,15 @@ def init_database(filepath):
         );
         """
     )
+    cursor.execute(
+        """
+        CREATE TABLE blacklist (
+            chat_id     text,
+            user_id     text,
+            username    text
+        );
+        """
+    )
     conn.commit()
 
 
@@ -141,7 +150,7 @@ def add_record(channel_id, msg_id, username, name, msg_type, msg_content, media_
 
 
 def get_comment_id(channel_id, msg_id):
-    script = "SELECT comment_id FROM reflect where chat_id = ? and msg_id = ?"
+    script = "SELECT comment_id FROM reflect WHERE chat_id = ? and msg_id = ?"
     params = [str(channel_id), str(msg_id)]
     result = list(execute(script, params))
     if len(result) == 0:
@@ -151,14 +160,46 @@ def get_comment_id(channel_id, msg_id):
 
 
 def get_recent_records(channel_id, msg_id, recent, offset=0):
-    script = "SELECT * FROM record where chat_id = ? and msg_id = ? ORDER BY date DESC LIMIT ? OFFSET ?"
+    script = "SELECT *, ROWID FROM record WHERE chat_id = ? and msg_id = ? ORDER BY date DESC LIMIT ? OFFSET ?"
     params = [str(channel_id), str(msg_id), recent, offset * recent]
     result = list(execute(script, params))
     return result
 
 
+def get_record_by_rowid(row_id):
+    script = "SELECT * FROM record WHERE ROWID = ?"
+    params = [row_id]
+    result = list(execute(script, params))
+    return result
+
+
+def get_base_offset_by_rowid(channel_id, msg_id, row_id):
+    script = "SELECT count(*) FROM record WHERE chat_id = ? AND msg_id = ? AND ROWID >= ?"
+    params = [str(channel_id), str(msg_id), row_id]
+    result = list(execute(script, params))
+    return result[0][0]
+
+
+def get_prev_rowid(channel_id, msg_id, row_id):
+    script = "SELECT ROWID FROM record WHERE chat_id = ? AND msg_id = ? AND ROWID > ? ORDER BY ROWID ASC LIMIT 1"
+    params = [str(channel_id), str(msg_id), row_id]
+    result = list(execute(script, params))
+    if result is not None and len(result) == 1:
+        return result[0][0]
+    return -1
+
+
+def get_next_rowid(channel_id, msg_id, row_id):
+    script = "SELECT ROWID FROM record WHERE chat_id = ? AND msg_id = ? AND ROWID < ? ORDER BY ROWID DESC LIMIT 1"
+    params = [str(channel_id), str(msg_id), row_id]
+    result = list(execute(script, params))
+    if result is not None and len(result) == 1:
+        return result[0][0]
+    return -1
+
+
 def get_channel_info_by_user(user_id):
-    script = "SELECT chat_id, username FROM config where admin_id = ?"
+    script = "SELECT chat_id, username FROM config WHERE admin_id = ?"
     params = [str(user_id)]
     result = list(execute(script, params))
     return result

@@ -5,6 +5,8 @@
 """ helper_global.py """
 """ Copyright 2018, Jogle Lew """
 from threading import Lock
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+
 lock = Lock()
 
 class GlobalVar:
@@ -54,6 +56,31 @@ def records_to_str(records):
             s += ("[%s] " % msg_type)
         s += msg_content + "\n"
     return s
+
+
+def records_to_buttons(records, channel_id, msg_id):
+    b = []
+    if records is None or len(records) == 0:
+        return b
+    records = records[::-1]
+    for idx, record in enumerate(records):
+        username = record[2]
+        name = record[3]
+        msg_type = record[4]
+        msg_content = record[5]
+        row_id = record[10]
+        s = ("%s: " % name)
+        if not msg_type == "text":
+            s += ("[%s] " % msg_type)
+        s += msg_content
+        button = [[
+            InlineKeyboardButton(
+                s,
+                callback_data="msg_detail,%d,%d,%d" % (channel_id, msg_id, row_id)
+            )
+        ]]
+        b += button
+    return b
 
 
 def parse_entity(src, entity_list):

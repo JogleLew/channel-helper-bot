@@ -48,7 +48,12 @@ helper_string = {
     "clean_cmd_start": "正在进行检查，请稍候...",
     "clean_cmd_deleted": "删除记录成功",
     "clean_cmd_set": "设置成功",
-    "fwd_source": "消息来源: "
+    "fwd_source": "消息来源: ",
+    "prev_msg": "上一条消息",
+    "next_msg": "下一条消息",
+    "no_message_detail": "未找到消息",
+    "back_to_msg_list": "返回消息列表",
+    "msg_from": "消息来源："
 }
 
 for item, value in helper_string.items():
