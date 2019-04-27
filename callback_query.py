@@ -362,7 +362,7 @@ def callback_query(bot, update):
     elif args[0] == 'option_delete':
         option_delete(bot, chat_id, origin_message_id, args)
     elif args[0] == 'option_finish':
-        option_fiinish(bot, chat_id, origin_message_id)
+        option_finish(bot, chat_id, origin_message_id)
     elif args[0] == 'option':
         if len(args) == 2:
             option_item(bot, chat_id, origin_message_id, args)
