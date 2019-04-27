@@ -343,7 +343,14 @@ def msg_delete(bot, update, chat_id, origin_message_id, args):
 
 
 def user_ban(bot, update, args):
-    pass
+    channel_id = int(args[1])
+    user_id = int(args[2])
+    name = args[3]
+    helper_database.ban_user(channel_id, user_id, name)
+    bot.answer_callback_query(
+        callback_query_id=update.callback_query.id,
+        text=helper_global.value("user_banned", "")
+    )
 
 
 def callback_query(bot, update):

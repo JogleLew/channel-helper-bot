@@ -56,7 +56,9 @@ helper_string = {
     "msg_from": "消息来源：",
     "delete_msg": "删除消息",
     "delete_success": "消息删除成功",
-    "ban_user": "封禁用户"
+    "ban_user": "封禁用户",
+    "user_banned": "已封禁该用户",
+    "banned_prompt": "频道管理员不允许你进行评论操作"
 }
 
 for item, value in helper_string.items():

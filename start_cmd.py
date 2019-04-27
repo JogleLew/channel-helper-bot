@@ -19,6 +19,13 @@ def start(bot, update, args):
     channel_id = int(params[1])
     msg_id = int(params[2])
     chat_id = update.message.chat_id
+
+    if chat_id < 0:
+        return
+    if helper_database.check_ban(channel_id, chat_id):
+        bot.send_message(chat_id=update.message.chat_id, text=helper_global.value("banned_prompt", "You are banned."))
+        return
+
     if params[0] == "add":
         helper_global.assign(str(chat_id) + "_status", params[1] + "," + params[2])
         bot.send_message(chat_id=update.message.chat_id, text=helper_global.value("start_comment_mode", ""))

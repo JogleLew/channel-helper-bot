@@ -57,7 +57,8 @@ def init_database(filepath):
         CREATE TABLE blacklist (
             chat_id     text,
             user_id     text,
-            username    text
+            name        text,
+            PRIMARY KEY (chat_id, user_id)
         );
         """
     )
@@ -210,6 +211,20 @@ def get_channel_info_by_user(user_id):
     params = [str(user_id)]
     result = list(execute(script, params))
     return result
+
+
+def ban_user(channel_id, user_id, name):
+    script = "INSERT INTO blacklist VALUES (?, ?, ?)"
+    params = [str(channel_id), str(user_id), name]
+    result = list(execute(script, params))
+    return result
+
+
+def check_ban(channel_id, user_id):
+    script = "SELECT * FROM blacklist WHERE chat_id = ? AND user_id = ?"
+    params = [str(channel_id), str(user_id)]
+    result = list(execute(script, params))
+    return len(result) > 0
 
 
 lock = Lock()
