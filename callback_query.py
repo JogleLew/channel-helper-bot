@@ -338,7 +338,7 @@ def msg_delete(bot, update, chat_id, origin_message_id, args):
         callback_query_id=update.callback_query.id,
         text=helper_global.value("delete_success", "")
     )
-    private_msg.update_dirty_list(channel_id, msg_id)
+    private_msg.update_dirty_msg(channel_id, msg_id)
     show_msg(bot, update, origin_message_id, chat_id, msg_args)
 
 
