@@ -22,7 +22,8 @@ def init_database(filepath):
             mode      int,
             recent    int,
             username  text,
-            admin_id  text
+            admin_id  text,
+            notify    int
         );
         """
     )
@@ -104,9 +105,9 @@ def get_all_channel_config():
     return result
 
 
-def add_channel_config(channel_id, lang, mode, recent, channel_username, admin_id):
-    script = "INSERT INTO config VALUES (?, ?, ?, ?, ?, ?)"
-    params = [str(channel_id), lang, mode, recent, channel_username, str(admin_id)]
+def add_channel_config(channel_id, lang, mode, recent, channel_username, admin_id, notify):
+    script = "INSERT INTO config VALUES (?, ?, ?, ?, ?, ?, ?)"
+    params = [str(channel_id), lang, mode, recent, channel_username, str(admin_id), notify]
     execute(script, params)
 
 
@@ -216,6 +217,13 @@ def get_channel_info_by_user(user_id):
 def ban_user(channel_id, user_id, name):
     script = "INSERT INTO blacklist VALUES (?, ?, ?)"
     params = [str(channel_id), str(user_id), name]
+    result = list(execute(script, params))
+    return result
+
+
+def unban_user(channel_id, user_id, name):
+    script = "DELETE FROM blacklist WHERE chat_id = ? AND user_id = ?"
+    params = [str(channel_id), str(user_id)]
     result = list(execute(script, params))
     return result
 

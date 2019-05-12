@@ -140,7 +140,7 @@ def check_channel_message(bot, message):
         bot.send_message(chat_id=chat_id, text=helper_global.value("register_cmd_no_info", ""))
         return
     try:
-        helper_database.add_channel_config(channel_id, 'zh-CN', 1, 10, channel_username, chat_id)
+        helper_database.add_channel_config(channel_id, 'zh-CN', 1, 10, channel_username, chat_id, 1)
     except:
         helper_global.assign(str(chat_id) + "_status", "0,0")
         bot.send_message(chat_id=chat_id, text=helper_global.value("register_cmd_failed", ""))
@@ -166,11 +166,11 @@ def private_msg(bot, update):
 
     # Check comment message
     comment_exist = helper_database.check_reflect(channel_id, msg_id)
+    config = helper_database.get_channel_config(channel_id)
+    if config is None:
+        return
+    recent, username, admin_id, notify = config[3], config[4], config[5], config[6]
     if not comment_exist:
-        config = helper_database.get_channel_config(channel_id)
-        if config is None:
-            return
-        recent = config[3]
         records = helper_database.get_recent_records(channel_id, msg_id, recent)
 
         comment_message = bot.send_message(
@@ -193,6 +193,14 @@ def private_msg(bot, update):
     dirty_list = helper_global.value("dirty_list", [])
     if not (channel_id, msg_id) in dirty_list:
         dirty_list.append((channel_id, msg_id))
+        if notify == 1 and not int(chat_id) == int(admin_id):
+            if username is not None:
+                bot.send_message(
+                    chat_id=admin_id, 
+                    text=helper_global.value("new_comment_message", "You have a new comment message.") + "\n" + helper_global.value("target_message", "") + "https://t.me/%s/%d" % (username, msg_id) 
+                )
+            else:
+                bot.send_message(chat_id=admin_id, text=helper_global.value("new_comment_message", "You have a new comment message."))
     helper_global.assign("dirty_list", dirty_list)
     lock.release()
 

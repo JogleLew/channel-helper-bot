@@ -123,6 +123,10 @@ def msg_detail(bot, update, chat_id, origin_message_id, args):
                 callback_data="msg_delete,%d,%d,%d,%d,%d,%d" % (row_id, channel_id, msg_id, recent, offset, chat_id)
             ),
             InlineKeyboardButton(
+                helper_global.value("unban_user", "Unban User"),
+                callback_data="user_unban,%d,%d,%s" % (channel_id, user_id, name)
+            ) if helper_database.check_ban(channel_id, user_id) else \
+            InlineKeyboardButton(
                 helper_global.value("ban_user", "Ban User"),
                 callback_data="user_ban,%d,%d,%s" % (channel_id, user_id, name)
             )
@@ -212,6 +216,10 @@ def option_item(bot, chat_id, origin_message_id, args):
         InlineKeyboardButton(
             "recent",
             callback_data="option,%s,recent" % args[1]
+        ),
+        InlineKeyboardButton(
+            "notify",
+            callback_data="option,%s,notify" % args[1]
         )
     ]] + [[
         InlineKeyboardButton(
@@ -303,6 +311,34 @@ def option_recent(bot, chat_id, origin_message_id, args):
     )
 
 
+def option_notify(bot, chat_id, origin_message_id, args):
+    # Prepare Keyboard
+    motd_keyboard = [[
+        InlineKeyboardButton(
+            "0",
+            callback_data="option,%s,notify,0" % args[1]
+        ),
+        InlineKeyboardButton(
+            "1",
+            callback_data="option,%s,notify,1" % args[1]
+        )
+    ]] + [[
+        InlineKeyboardButton(
+            helper_global.value("option_finish", ""),
+            callback_data="option_finish"
+        )
+    ]]
+
+    motd_markup = InlineKeyboardMarkup(motd_keyboard)
+
+    bot.edit_message_text(
+        chat_id=chat_id, 
+        message_id=origin_message_id,
+        text=helper_global.value("option_choose_notify_value", ""),
+        reply_markup=motd_markup
+    )
+
+
 def option_delete(bot, chat_id, origin_message_id, args):
     channel_id = args[1]
     helper_database.delete_channel_config(channel_id)
@@ -342,14 +378,31 @@ def msg_delete(bot, update, chat_id, origin_message_id, args):
     show_msg(bot, update, origin_message_id, chat_id, msg_args)
 
 
-def user_ban(bot, update, args):
+def user_ban(bot, update, chat_id, origin_message_id, args):
     channel_id = int(args[1])
     user_id = int(args[2])
     name = args[3]
-    helper_database.ban_user(channel_id, user_id, name)
+    try:
+        helper_database.ban_user(channel_id, user_id, name)
+    except:
+        bot.answer_callback_query(
+            callback_query_id=update.callback_query.id,
+            text=helper_global.value("user_banned_failed", "")
+        )
     bot.answer_callback_query(
         callback_query_id=update.callback_query.id,
         text=helper_global.value("user_banned", "")
+    )
+
+
+def user_unban(bot, update, chat_id, origin_message_id, args):
+    channel_id = int(args[1])
+    user_id = int(args[2])
+    name = args[3]
+    helper_database.unban_user(channel_id, user_id, name)
+    bot.answer_callback_query(
+        callback_query_id=update.callback_query.id,
+        text=helper_global.value("user_unbanned", "")
     )
 
 
@@ -365,7 +418,9 @@ def callback_query(bot, update):
     elif args[0] == 'msg_delete':
         msg_delete(bot, update, chat_id, origin_message_id, args)
     elif args[0] == 'user_ban':
-        user_ban(bot, update, args)
+        user_ban(bot, update, chat_id, origin_message_id, args)
+    elif args[0] == 'user_unban':
+        user_unban(bot, update, chat_id, origin_message_id, args)
     elif args[0] == 'option_delete':
         option_delete(bot, chat_id, origin_message_id, args)
     elif args[0] == 'option_finish':
@@ -377,6 +432,8 @@ def callback_query(bot, update):
             option_mode(bot, chat_id, origin_message_id, args)
         elif len(args) == 3 and args[2] == "recent":
             option_recent(bot, chat_id, origin_message_id, args)
+        elif len(args) == 3 and args[2] == "notify":
+            option_notify(bot, chat_id, origin_message_id, args)
         elif len(args) == 4:
             option_update(bot, update, chat_id, origin_message_id, args)
 

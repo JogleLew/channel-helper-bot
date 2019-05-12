@@ -20,7 +20,7 @@ helper_string = {
     "comment_empty": "",
     "start_comment_mode": "您已进入评论模式，向我发送消息即可进行评论。使用 /cancel 命令可以中止评论模式。",
     "stop_comment_mode": "您已退出评论模式",
-    "comment_success": "评论成功",
+    "comment_success": "评论成功！如需编辑评论，直接编辑已发送的消息即可。",
     "comment_edit_success": "编辑评论成功",
     "prev_page": "上一页",
     "next_page": "下一页",
@@ -31,7 +31,7 @@ helper_string = {
     "register_cmd_not_admin": "您看起来不是频道的管理员呢，本 bot 无法为您进行登记",
     "register_cmd_no_permission": "检测到您没有给本 bot 提供发送、编辑、删除消息的权限。修改完权限后，请重新执行登记操作。",
     "register_cmd_no_info": "本 bot 无法获取您的频道信息，请检查是否已经将本 bot 添加为频道管理员。",
-    "register_cmd_failed": "您的频道信息可能已被记录，如有问题请联系管理员 @JogleLew",
+    "register_cmd_failed": "频道信息记录失败，如有问题请联系管理员 @JogleLew",
     "register_cmd_success": "您的频道信息已成功记录，并启用了默认的评论设置。如需修改配置，请使用 /option 命令。",
     "register_delete_info": "感谢您使用本 bot ！检测您已经将本 bot 移出您的频道，我们已删除您的频道登记信息。如需继续使用请重新执行 /register 登记操作。",
     "option_no_channel": "您还没有登记过频道信息，请先使用 /register 命令完成登记。",
@@ -40,9 +40,10 @@ helper_string = {
     "option_finish": "完成配置",
     "option_finished": "配置已完成",
     "option_choose_channel": "请选择一个频道以进行配置",
-    "option_choose_item": "请选择一个项目以进行配置\nmode: bot 的工作模式\nrecent: 在频道中显示的评论数量",
+    "option_choose_item": "请选择一个项目以进行配置\nmode: bot 的工作模式\nrecent: 在频道中显示的评论数量\nnotify: 新评论提醒",
     "option_choose_mode_value": "本 bot 有三种工作模式\n模式 0: 手动模式。当频道中新增消息时，bot 不会自动创建评论消息。当频道管理员使用 /comment 回复需要评论的原始消息时，bot 才会创建评论消息。如果 /comment 命令不起作用，请检查是否授予 bot 删除消息的权限。\n模式 1: 自动模式。当频道中新增消息时，bot 自动创建评论消息。该模式能保持原始频道消息不被修改。\n模式 2: 自动模式(beta)。当频道中新增消息时，bot 会尝试编辑原消息，显示添加评论按钮。如果编辑失败则直接创建评论消息。该模式能尽可能减少频道里的评论区数量。\n请选择您所需要的工作模式：",
     "option_choose_recent_value": "在频道中仅显示最近的若干条消息。请选择频道显示的最近条目数量：",
+    "option_choose_notify_value": "您可以选择当频道收到新评论时是否开启提醒功能。0代表关闭，1代表开启。",
     "option_update_success": "配置更新成功",
     "option_update_failed": "配置更新失败",
     "clean_cmd_start": "正在进行检查，请稍候...",
@@ -57,8 +58,13 @@ helper_string = {
     "delete_msg": "删除消息",
     "delete_success": "消息删除成功",
     "ban_user": "封禁用户",
+    "unban_user": "解封用户",
     "user_banned": "已封禁该用户",
-    "banned_prompt": "频道管理员不允许你进行评论操作"
+    "user_banned_failed": "封禁失败，该用户可能已被封禁",
+    "user_unbanned": "用户已解封",
+    "banned_prompt": "频道管理员不允许你进行评论操作",
+    "new_comment_message": "您收到了新的评论",
+    "target_message": "目标消息："
 }
 
 for item, value in helper_string.items():
