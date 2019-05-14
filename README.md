@@ -18,15 +18,15 @@ Channel Helper Bot 是一个 Telegram Bot，用于给频道添加简单的评论
 
 在点击“添加评论”之后，即进入评论模式，向 bot 写下想说的话即可发布评论。如需退出评论模式，请使用 `/cancel` 命令。
 
-在点击“显示所有评论”之后，bot 会在私聊页面显示一个可翻页的评论区，用户能够查看所有之前的评论信息。
+在点击“显示所有评论”之后，bot 会在私聊页面显示一个可翻页的评论区，用户能够查看所有之前的评论信息（支持查看贴纸、图片、视频、文件等），管理员可以在这里进行删除消息、封禁用户的操作。
 
 ### 轻松的配置流程
 
 配置过程十分简单，频道主只需几个步骤即可轻松完成 Channel Helper Bot 的配置。
 
-1. 向 bot 发送 `/register` 命令，按照 bot 的指示从频道中转发一条消息，用以记录频道的相关信息。
+1. 将 bot 添加为频道的管理员，同时 bot 需要足够的权限进行消息的发送和编辑。
 
-2. 将 bot 添加为频道的管理员，同时 bot 需要足够的权限进行消息的发送和编辑。
+2. 向 bot 私聊发送 `/register` 命令，按照 bot 的指示从频道中转发一条消息，用以记录频道的相关信息。
 
 3. 发布一条消息看看吧！如果自动呼出评论区了则说明配置成功。（注：默认情况下 bot 为自动模式）
 
@@ -34,13 +34,11 @@ Channel Helper Bot 是一个 Telegram Bot，用于给频道添加简单的评论
 
 ### 智慧的一物多用
 
-Channel Helper Bot 并不满足于只服务一个频道。任何人都可以通过配置来添加和使用 Channel Helper Bot。同时 bot 本身也是开源的，您可以根据自己的需要另行部署。
-
-*为了保证服务质量，单个 Channel Helper Bot 同时服务的频道数不建议超过30。
+Channel Helper Bot 并不满足于只服务一个频道。任何人都可以通过配置来添加和使用 Channel Helper Bot。同时 bot 本身也是开源的，您可以根据自己的需要另行部署。[@jogle_channel_bot](https://t.me/jogle_channel_bot) 是作者进行部署的最新版 Bot，欢迎使用。
 
 ## 部署
 
-为了能运行 Channel Helper Bot，需要准备一个 Python 3 的环境，并需要使用 pip。
+为了能运行 Channel Helper Bot，需要准备一个 Python 3 的环境，并需要使用 pip安装相应的依赖。
 
 ### 安装依赖 
 
@@ -54,9 +52,9 @@ Channel Helper Bot 并不满足于只服务一个频道。任何人都可以通�
 |----------------------|---------------|--------------------------------------------------
 | BOT_TOKEN            | (str)         | Telegram Bot 的 token                            
 | BOT_OWNER            | (list of int) | bot 管理员的 userID                              
-| MIN_REFRESH_INTERVAL | (int)         | 最小刷新时间间隔                                 
+| MIN_REFRESH_INTERVAL | (int)         | 最小刷新时间间隔，单位为秒                                 
 | MODULE_NAME          | (list of str) | 启用的模块名称（如无特殊需求，则不需要更改这项） 
-| DATABASEW_DIR        | (str)         | 数据库存放位置                             
+| DATABASE_DIR        | (str)         | 数据库存放位置                             
 ------------------------------------------------------------------------------------------
 
 ### 运行 bot 
