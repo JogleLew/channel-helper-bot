@@ -42,7 +42,7 @@ Channel Helper Bot 并不满足于只服务一个频道。任何人都可以通�
 
 ### 安装依赖 
 
-`pip3 install -r requirement.txt`
+`pip3 install python-telegram-bot`
 
 ### 配置文件
 
