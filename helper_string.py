@@ -12,7 +12,7 @@ helper_string = {
     "permission_denied_text": "你怕不是假的 jogle",
     "reload_cmd_success": "重启好了，很棒棒哦！",
     "reload_cmd_failed": "嗯，好像出现了一些问题呢…",
-    "start_cmd_text": "这是由 JogleLew 开发的频道回复助手 Bot 。你可以使用 /help 命令查看详细使用说明。", 
+    "start_cmd_text": "这是由 JogleLew 开发的频道回复助手 Bot 。你可以使用 /help 命令查看详细使用说明。（注：由于数据库出现了一个严重的错误，导致bot丢失了2019年11月10日之前的数据，烦请频道主重新登记频道信息以便继续使用）", 
     "help_cmd_text": "欢迎使用 Channel Helper Bot，本 bot 可以为您的频道提供回复和展示评论信息的入口，从而为频道提供互动的平台。\nGithub链接：https://github.com/JogleLew/channel-helper-bot\n使用此 bot 即为允许本 bot 在您的频道内进行发送、编辑和删除操作，并收集和存储评论信息。\n使用步骤：\n1. 使用 /register 命令登记您的频道信息。\n2. 将此 bot 添加为频道管理员。\n3. 完成。如需更改配置请使用 /option 命令。",
     "add_comment": "添加评论",
     "show_all_comments": "显示所有评论",
