@@ -10,3 +10,5 @@ BOT_OWNER = [Bot Owner 1 UserID, Bot Owner 2 UserID]
 MIN_REFRESH_INTERVAL = 5
 MODULE_NAME = ['start_cmd', 'help_cmd', 'cancel_cmd', 'sql_cmd', 'clean_cmd', 'register_cmd', 'option_cmd', 'channel_msg', 'private_msg', 'callback_query']
 DATABASE_DIR = "."
+DEFAULT_LANG = "zh-CN"
+LANG_LIST = ["zh-CN", "en-US"]
