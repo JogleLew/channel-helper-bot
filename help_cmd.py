@@ -8,7 +8,7 @@ import helper_global
 from telegram.ext import CommandHandler
 
 def help(bot, update):
-    help_text = helper_global.value("help_cmd_text", "")
+    help_text = helper_global.value("help_cmd_text", "", "all")
     bot.send_message(chat_id=update.message.chat_id, text=help_text)
 
 

@@ -4,6 +4,7 @@
 """ Channel Helper Bot """
 """ helper_global.py """
 """ Copyright 2018, Jogle Lew """
+import helper_const
 from threading import Lock
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
@@ -13,17 +14,26 @@ class GlobalVar:
     var_set = {}
 
 
-def assign(var_name, var_value):
+def assign(var_name, var_value, lang=helper_const.DEFAULT_LANG):
     lock.acquire()
-    GlobalVar.var_set[var_name] = var_value
+    if not lang in GlobalVar.var_set:
+        GlobalVar.var_set[lang] = {}
+    GlobalVar.var_set[lang][var_name] = var_value
     lock.release()
 
 
-def value(var_name, default_value):
+def value(var_name, default_value, lang=helper_const.DEFAULT_LANG):
+    if lang == "all":
+        result = ""
+        for lang_item in helper_const.LANG_LIST:
+            result += value(var_name, default_value, lang=lang_item) + "\n\n"
+        return result
+    if not lang in GlobalVar.var_set:
+        lang = helper_const.DEFAULT_LANG
     lock.acquire()
-    if not var_name in GlobalVar.var_set:
-        GlobalVar.var_set[var_name] = default_value
-    result = GlobalVar.var_set[var_name]
+    if not var_name in GlobalVar.var_set[lang]:
+        GlobalVar.var_set[lang][var_name] = default_value
+    result = GlobalVar.var_set[lang][var_name]
     lock.release()
     return result
 
@@ -40,10 +50,10 @@ def get_sender_name(message):
     return username
 
 
-def records_to_str(records):
-    s = value("comment_header", "") + "\n"
+def records_to_str(records, lang):
+    s = value("comment_header", "", lang=lang) + "\n"
     if records is None or len(records) == 0:
-        s += value("comment_empty", "")
+        s += value("comment_empty", "", lang=lang)
         return s
     records = records[::-1]
     for record in records:

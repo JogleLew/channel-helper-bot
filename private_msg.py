@@ -68,6 +68,7 @@ def update_comments(bot, channel_id, msg_id):
     config = helper_database.get_channel_config(channel_id)
     if config is None:
         return
+    channel_lang = config[1]
     mode = config[2]
     recent = config[3]
     records = helper_database.get_recent_records(channel_id, msg_id, recent)
@@ -75,18 +76,18 @@ def update_comments(bot, channel_id, msg_id):
     # Prepare Keyboard
     motd_keyboard = [[
         InlineKeyboardButton(
-            helper_global.value("add_comment", "Add Comment"),
+            helper_global.value("add_comment", "Add Comment", lang=channel_lang),
             url="http://telegram.me/%s?start=add_%d_%d" % (helper_global.value('bot_username', ''), channel_id, msg_id)
         ),
         InlineKeyboardButton(
-            helper_global.value("show_all_comments", "Show All"),
+            helper_global.value("show_all_comments", "Show All", lang=channel_lang),
             url="http://telegram.me/%s?start=show_%s_%d" % (helper_global.value('bot_username', ''), channel_id, msg_id)
         )
     ]]
     motd_markup = InlineKeyboardMarkup(motd_keyboard)
 
     bot.edit_message_text(
-        text=helper_global.records_to_str(records), 
+        text=helper_global.records_to_str(records, channel_lang), 
         chat_id=channel_id, 
         message_id=comment_id, 
         parse_mode=telegram.ParseMode.HTML,
@@ -111,11 +112,11 @@ def update_dirty_list():
 def check_channel_message(bot, message):
     chat_id = message.chat_id
     if not message.forward_from_chat:
-        bot.send_message(chat_id=chat_id, text=helper_global.value("register_cmd_invalid", ""))
+        bot.send_message(chat_id=chat_id, text=helper_global.value("register_cmd_invalid", "", "all"))
         return
     chat_type = message.forward_from_chat.type
     if not chat_type == "channel":
-        bot.send_message(chat_id=chat_id, text=helper_global.value("register_cmd_invalid", ""))
+        bot.send_message(chat_id=chat_id, text=helper_global.value("register_cmd_invalid", "", "all"))
         return
     channel_username = message.forward_from_chat.username
     channel_id = message.forward_from_chat.id
@@ -125,7 +126,7 @@ def check_channel_message(bot, message):
         chat_members = bot.get_chat_administrators(chat_id=channel_id).result()
         chat_member_ids = [member.user.id for member in chat_members]
         if not user_id in chat_member_ids:
-            bot.send_message(chat_id=chat_id, text=helper_global.value("register_cmd_not_admin", ""))
+            bot.send_message(chat_id=chat_id, text=helper_global.value("register_cmd_not_admin", "", "all"))
             return
         for member in chat_members:
             if member.user.id == bot_id:
@@ -133,21 +134,21 @@ def check_channel_message(bot, message):
                 edit_permission = member.can_edit_messages if member.can_edit_messages else False
                 delete_permission = member.can_delete_messages if member.can_delete_messages else False
                 if not post_permission or not edit_permission or not delete_permission:
-                    bot.send_message(chat_id=chat_id, text=helper_global.value("register_cmd_no_permission", ""))
+                    bot.send_message(chat_id=chat_id, text=helper_global.value("register_cmd_no_permission", "", "all"))
                     return
                 break
     except:
-        bot.send_message(chat_id=chat_id, text=helper_global.value("register_cmd_no_info", ""))
+        bot.send_message(chat_id=chat_id, text=helper_global.value("register_cmd_no_info", "", "all"))
         return
     try:
         helper_database.add_channel_config(channel_id, 'zh-CN', 1, 10, channel_username, chat_id, 1)
     except:
         helper_global.assign(str(chat_id) + "_status", "0,0")
-        bot.send_message(chat_id=chat_id, text=helper_global.value("register_cmd_failed", ""))
+        bot.send_message(chat_id=chat_id, text=helper_global.value("register_cmd_failed", "", "all"))
         return
 
     helper_global.assign(str(chat_id) + "_status", "0,0")
-    bot.send_message(chat_id=chat_id, text=helper_global.value("register_cmd_success", ""))
+    bot.send_message(chat_id=chat_id, text=helper_global.value("register_cmd_success", "", "all"))
 
 
 def private_msg(bot, update):
@@ -169,13 +170,14 @@ def private_msg(bot, update):
     config = helper_database.get_channel_config(channel_id)
     if config is None:
         return
+    channel_lang = config[1]
     recent, username, admin_id, notify = config[3], config[4], config[5], config[6]
     if not comment_exist:
         records = helper_database.get_recent_records(channel_id, msg_id, recent)
 
         comment_message = bot.send_message(
             chat_id=channel_id, 
-            text=helper_global.records_to_str(records), 
+            text=helper_global.records_to_str(records, channel_lang), 
             reply_to_message_id=msg_id,
             parse_mode=telegram.ParseMode.HTML
         ).result()
@@ -197,17 +199,17 @@ def private_msg(bot, update):
             if username is not None:
                 bot.send_message(
                     chat_id=admin_id, 
-                    text=helper_global.value("new_comment_message", "You have a new comment message.") + "\n" + helper_global.value("target_message", "") + "https://t.me/%s/%d" % (username, msg_id) 
+                    text=helper_global.value("new_comment_message", "You have a new comment message.", lang=channel_lang) + "\n" + helper_global.value("target_message", "", lang=channel_lang) + "https://t.me/%s/%d" % (username, msg_id) 
                 )
             else:
-                bot.send_message(chat_id=admin_id, text=helper_global.value("new_comment_message", "You have a new comment message."))
+                bot.send_message(chat_id=admin_id, text=helper_global.value("new_comment_message", "You have a new comment message.", lang=channel_lang))
     helper_global.assign("dirty_list", dirty_list)
     lock.release()
 
     if result == 0:
-        bot.send_message(chat_id=chat_id, text=helper_global.value("comment_success", "Success!"))
+        bot.send_message(chat_id=chat_id, text=helper_global.value("comment_success", "Success!", lang=channel_lang))
     elif result == 1:
-        bot.send_message(chat_id=chat_id, text=helper_global.value("comment_edit_success", "Success!"))
+        bot.send_message(chat_id=chat_id, text=helper_global.value("comment_edit_success", "Success!", lang=channel_lang))
 
 
 def update_dirty_msg(channel_id, msg_id):

@@ -12,14 +12,17 @@ import telegram
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CommandHandler
 
-def option(bot, update):
-    from_id = update.message.from_user.id
+def option(bot, update, args):
+    if args is None or len(args) == 0:
+        lang = helper_const.DEFAULT_LANG
+    else:
+        lang = args[0]
     chat_id = update.message.chat_id
-    records = helper_database.get_channel_info_by_user(from_id)
+    records = helper_database.get_channel_info_by_user(chat_id)
     if records is None or len(records) == 0:
         bot.send_message(
             chat_id=chat_id, 
-            text=helper_global.value("option_no_channel", "")
+            text=helper_global.value("option_no_channel", "", lang="all")
         )
         return
 
@@ -27,21 +30,26 @@ def option(bot, update):
     motd_keyboard = [[
         InlineKeyboardButton(
             "@" + record[1] if record[1] else "id: " + str(record[0]),
-            callback_data="option,%s" % record[0]
+            callback_data="option|%s,%s" % (lang, record[0])
         )
     ] for record in records] + [[
         InlineKeyboardButton(
-            helper_global.value("option_finish", ""),
-            callback_data="option_finish"
+            lang,
+            callback_data="option|%s" % lang
+        )
+    for lang in helper_const.LANG_LIST]] + [[
+        InlineKeyboardButton(
+            helper_global.value("option_finish", "", lang),
+            callback_data="option_finish|%s" % lang
         )
     ]]
 
     motd_markup = InlineKeyboardMarkup(motd_keyboard)
     bot.send_message(
         chat_id=chat_id, 
-        text=helper_global.value("option_choose_channel", ""),
+        text=helper_global.value("option_choose_channel", "", lang=lang),
         reply_markup=motd_markup
     )
 
 
-_handler = CommandHandler('option', option)
+_handler = CommandHandler('option', option, pass_args=True)

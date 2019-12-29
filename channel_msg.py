@@ -14,7 +14,10 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 parse_entity = helper_global.parse_entity
 
-def add_comment(bot, chat_id, message_id, media_group_id=None):
+def add_comment(bot, chat_id, config, message_id, media_group_id=None):
+    channel_lang = config[1]
+    recent = config[3]
+
     # Avoid duplicated comment for media group
     if media_group_id:
        last_media_group = helper_global.value(str(chat_id) + '_last_media_group', '0')
@@ -26,25 +29,21 @@ def add_comment(bot, chat_id, message_id, media_group_id=None):
     # Prepare Keyboard
     motd_keyboard = [[
         InlineKeyboardButton(
-            helper_global.value("add_comment", "Add Comment"),
+            helper_global.value("add_comment", "Add Comment", lang=channel_lang),
             url="http://telegram.me/%s?start=add_%d_%d" % (helper_global.value('bot_username', ''), chat_id, message_id)
         ),
         InlineKeyboardButton(
-            helper_global.value("show_all_comments", "Show All"),
+            helper_global.value("show_all_comments", "Show All", lang=channel_lang),
             url="http://telegram.me/%s?start=show_%s_%d" % (helper_global.value('bot_username', ''), chat_id, message_id)
         )
     ]]
     motd_markup = InlineKeyboardMarkup(motd_keyboard)
 
-    config = helper_database.get_channel_config(chat_id)
-    if config is None:
-        return
-    recent = config[3]
     records = helper_database.get_recent_records(chat_id, message_id, recent)
 
     comment_message = bot.send_message(
         chat_id=chat_id, 
-        text=helper_global.records_to_str(records), 
+        text=helper_global.records_to_str(records, channel_lang), 
         reply_to_message_id=message_id,
         reply_markup=motd_markup, 
         parse_mode=telegram.ParseMode.HTML
@@ -52,25 +51,27 @@ def add_comment(bot, chat_id, message_id, media_group_id=None):
     helper_database.add_reflect(chat_id, message_id, comment_message.message_id)
 
 
-def add_compact_comment(bot, chat_id, message_id, message):
+def add_compact_comment(bot, chat_id, config, message_id, message):
+    channel_lang = config[1]
+
     # Fallback media group message
     if message.media_group_id:
-        add_comment(bot, chat_id, message_id, media_group_id=message.media_group_id)
+        add_comment(bot, chat_id, config, message_id, media_group_id=message.media_group_id)
         return
 
     if message.forward_from or message.forward_from_chat:
-        new_message = deforward(bot, message)
+        new_message = deforward(bot, message, channel_lang)
         message_id = new_message.message_id
         message = new_message
 
     # Prepare Keyboard
     motd_keyboard = [[
         InlineKeyboardButton(
-            helper_global.value("add_comment", "Add Comment"),
+            helper_global.value("add_comment", "Add Comment", lang=channel_lang),
             url="http://telegram.me/%s?start=add_%d_%d" % (helper_global.value('bot_username', ''), chat_id, message_id)
         ), 
         InlineKeyboardButton(
-            helper_global.value("show_all_comments", "Show All"),
+            helper_global.value("show_all_comments", "Show All", lang=channel_lang),
             url="http://telegram.me/%s?start=show_%s_%d" % (helper_global.value('bot_username', ''), chat_id, message_id)
         )
     ]]
@@ -83,7 +84,7 @@ def add_compact_comment(bot, chat_id, message_id, message):
             reply_markup=motd_markup
         ).result()
     except:
-        add_comment(bot, chat_id, message_id)
+        add_comment(bot, chat_id, config, message_id)
 
 
 def avoidNone(s):
@@ -92,9 +93,7 @@ def avoidNone(s):
     return ''
 
 
-
-
-def deforward(bot, msg):
+def deforward(bot, msg, lang):
     chat_id = msg.chat_id
     message_id = msg.message_id
 
@@ -103,22 +102,22 @@ def deforward(bot, msg):
     if msg.forward_from:
         # Check username existence
         if msg.forward_from.username:
-            forward_info = helper_global.value('fwd_source', 'Forwarded from:') + '@%s' % msg.forward_from.username
+            forward_info = helper_global.value('fwd_source', 'Forwarded from:', lang=lang) + '@%s' % msg.forward_from.username
         else:
-            forward_info = helper_global.value('fwd_source', 'Forwarded from:') + '<a href="tg://user?id=%d">%s</a>' % (
+            forward_info = helper_global.value('fwd_source', 'Forwarded from:', lang=lang) + '<a href="tg://user?id=%d">%s</a>' % (
                 msg.forward_from.id, 
                 msg.forward_from.first_name + " " + avoidNone(msg.forward_from.last_name)
             )
     elif msg.forward_from_chat:
         # Check channel public/private
         if msg.forward_from_chat.username:
-            forward_info = helper_global.value('fwd_source', 'Forwarded from:') + 'https://t.me/%s/%s' % (
+            forward_info = helper_global.value('fwd_source', 'Forwarded from:', lang=lang) + 'https://t.me/%s/%s' % (
                 msg.forward_from_chat.username,
                 msg.forward_from_message_id
             )
             has_msg_link = True
         else:
-            forward_info = helper_global.value('fwd_source', 'Forwarded from:') + msg.forward_from_chat.title
+            forward_info = helper_global.value('fwd_source', 'Forwarded from:', lang=lang) + msg.forward_from_chat.title
 
     message_type = effective_message_type(msg)
     new_msg = None
@@ -206,15 +205,15 @@ def channel_post_msg(bot, update):
 
     # Auto Comment Mode
     if mode == 1: 
-        add_comment(bot, chat_id, message_id, media_group_id=message.media_group_id)
+        add_comment(bot, chat_id, config, message_id, media_group_id=message.media_group_id)
     elif mode == 2:
-        add_compact_comment(bot, chat_id, message_id, message)
+        add_compact_comment(bot, chat_id, config, message_id, message)
 
     # Manual Mode
     elif mode == 0 and message.reply_to_message is not None and message.text == "/comment":
         message_id = message.reply_to_message.message_id
         bot.delete_message(chat_id=chat_id, message_id=message.message_id)
-        add_compact_comment(bot, chat_id, message_id, message.reply_to_message)
+        add_compact_comment(bot, chat_id, config, message_id, message.reply_to_message)
 
 
 class FilterChannelPost(BaseFilter):
