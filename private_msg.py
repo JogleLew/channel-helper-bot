@@ -141,7 +141,7 @@ def check_channel_message(bot, message):
         bot.send_message(chat_id=chat_id, text=helper_global.value("register_cmd_no_info", "", "all"))
         return
     try:
-        helper_database.add_channel_config(channel_id, 'zh-CN', 1, 10, channel_username, chat_id, 1)
+        helper_database.add_channel_config(channel_id, helper_const.DEFAULT_LANG, 1, 10, channel_username, chat_id, 1)
     except:
         helper_global.assign(str(chat_id) + "_status", "0,0")
         bot.send_message(chat_id=chat_id, text=helper_global.value("register_cmd_failed", "", "all"))

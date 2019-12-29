@@ -92,7 +92,7 @@ helper_string_en_us = {
     "register_cmd_no_permission": "Permission check error. Make sure you grant the permissions of Send, Edit and Delete Messages to the bot and register again.",
     "register_cmd_no_info": "This bot cannot access your channel. Please check whether the bot is an admin of your channel.",
     "register_cmd_failed": "Registration Failed. Please contact the developer @JogleLew for further assistance.",
-    "register_cmd_success": "Registration Successfully. Default config is applied to your channel. Use /option command to modify your config.",
+    "register_cmd_success": "Registered Successfully. Default config is applied to your channel. Use /option command to modify your config.",
     "option_no_channel": "No registration info found. Please use /register command first.",
     "option_delete": "Delete registration",
     "option_record_deleted": "Registration record is deleted. Thanks for your using!",

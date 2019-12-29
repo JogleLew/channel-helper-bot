@@ -58,7 +58,7 @@ def records_to_str(records, lang):
     records = records[::-1]
     for record in records:
         username = record[2]
-        name = record[3]
+        name = record[3].replace('<', '&lt;').replace('>', '&gt;')
         msg_type = record[4]
         msg_content = record[5]
         s += ("<b>%s</b>: " % name)

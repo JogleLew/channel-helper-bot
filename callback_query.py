@@ -128,11 +128,11 @@ def msg_detail(bot, update, chat_id, origin_message_id, args):
             ),
             InlineKeyboardButton(
                 helper_global.value("unban_user", "Unban User", lang=channel_lang),
-                callback_data="user_unban,%d,%d,%s" % (channel_id, user_id, name)
+                callback_data="user_unban,%d,%d,%s,%d,%d" % (channel_id, user_id, name, msg_id, row_id)
             ) if helper_database.check_ban(channel_id, user_id) else \
             InlineKeyboardButton(
                 helper_global.value("ban_user", "Ban User", lang=channel_lang),
-                callback_data="user_ban,%d,%d,%s" % (channel_id, user_id, name)
+                callback_data="user_ban,%d,%d,%s,%d,%d" % (channel_id, user_id, name, msg_id, row_id)
             )
         ]
     ] if str(chat_id) == str(admin_id) else []
@@ -455,6 +455,8 @@ def user_ban(bot, update, chat_id, origin_message_id, args):
     channel_id = int(args[1])
     user_id = int(args[2])
     name = args[3]
+    msg_id = int(args[4])
+    row_id = int(args[5])
     config = helper_database.get_channel_config(channel_id)
     if config is None:
         return
@@ -470,17 +472,25 @@ def user_ban(bot, update, chat_id, origin_message_id, args):
         callback_query_id=update.callback_query.id,
         text=helper_global.value("user_banned", "", lang=channel_lang)
     )
+    msg_detail(bot, update, chat_id, origin_message_id, ["msg_detail", channel_id, msg_id, row_id])
 
 
 def user_unban(bot, update, chat_id, origin_message_id, args):
     channel_id = int(args[1])
     user_id = int(args[2])
     name = args[3]
+    msg_id = int(args[4])
+    row_id = int(args[5])
+    config = helper_database.get_channel_config(channel_id)
+    if config is None:
+        return
+    channel_lang = config[1]
     helper_database.unban_user(channel_id, user_id, name)
     bot.answer_callback_query(
         callback_query_id=update.callback_query.id,
-        text=helper_global.value("user_unbanned", "", lang=lang)
+        text=helper_global.value("user_unbanned", "", lang=channel_lang)
     )
+    msg_detail(bot, update, chat_id, origin_message_id, ["msg_detail", channel_id, msg_id, row_id])
 
 
 def callback_query(bot, update):
