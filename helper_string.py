@@ -127,7 +127,7 @@ helper_string_en_us = {
     "target_message": "Target message: "
 }
 
- helper_string_pt_br = {
+helper_string_pt_br = {
     "development_text": "Esta função ainda está em desenvolvimento...",
     "permission_denied_text": "Sem permissão",
     "reload_cmd_success": "Recarregado. Boa sorte.",
@@ -189,7 +189,7 @@ helper_string_en_us = {
 
 lang_config = {
     "zh-CN": helper_string_zh_cn,
-    "en-US": helper_string_en_us
+    "en-US": helper_string_en_us,
     "pt-BR": helper_string_pt_br
 }
 
