@@ -127,9 +127,70 @@ helper_string_en_us = {
     "target_message": "Target message: "
 }
 
+ helper_string_pt_br = {
+    "development_text": "Esta função ainda está em desenvolvimento...",
+    "permission_denied_text": "Sem permissão",
+    "reload_cmd_success": "Recarregado. Boa sorte.",
+    "reload_cmd_failed": "Ocorreu um problema ao recarregar.",
+    "start_cmd_text": "Este é o bot Channel Helper de Jogle Lew. Use o comando /help para obter mais informações.", 
+    "help_cmd_text": "Obrigado por escolher o bot Channel Helper. Esse bot pode gerenciar e exibir comentários em seu canal, fornecendo uma nova maneira de comunicação entre o dono e seus inscritos. O código do Channel Helper Bot está disponível no Github: https://github.com/JogleLew/channel-helper-bot\nAo usar esse bot, você permite que ele envie, edite e exclua mensagens em seu canal, além de coletar e armazene os comentários dos usuários. \nComo usar: \n1. Adicione este bot ao seu canal como administrador. \n2. Envie /register para ativar o recurso de comentário no seu canal\n3. Pronto. Use o comando /option para configurar",
+    "add_comment": "Adicionar comentário",
+    "show_all_comments": "Mostrar todos os comentários",
+    "comment_header": "===== Comentários =====",
+    "comment_empty": "",
+    "start_comment_mode": "[Modo de comentário] Deixe um comentário enviando uma mensagem. Envie /cancel para sair do Modo de comentário",
+    "stop_comment_mode": "[Sair do Modo de comentário]",
+    "comment_success": "[Comentário enviado] Se você deseja editar seu comentário, basta modificar a mensagem que você enviou.",
+    "comment_edit_success": "[Editado com sucesso]",
+    "prev_page": "Página anterior",
+    "next_page": "Próxima página",
+    "no_prev_page": "Nenhuma página anterior",
+    "no_next_page": "Nenhuma página seguinte",
+    "register_cmd_text": "Certifique-se de adicionar este bot ao seu canal como administrador (Configurações do canal -> Adicionar administrador -> Pesquisar nome de usuário do bot -> Clique) e conceda as permissões para o bot de enviar, editar e excluir mensagens. Em seguida, encaminhe uma mensagem do seu canal para o bot.",
+    "register_cmd_invalid": "Esta mensagem não contém informações do canal. Envie-me uma mensagem original do seu canal.",
+    "register_cmd_not_admin": "Você não é o administrador do canal, portanto não tem permissão para se registrar.",
+    "register_cmd_no_permission": "Erro na verificação de permissão. Certifique-se de conceder as permissões de enviar, editar e excluir mensagens ao bot e tente se registrar novamente.",
+    "register_cmd_no_info": "Este bot não pode acessar seu canal. Verifique se o bot é um administrador do seu canal. ",
+    "register_cmd_failed": "Falha no registro. Entre em contato com o desenvolvedor @JogleLew para obter ajuda.",
+    "register_cmd_success": "Registrado com sucesso. A configuração padrão foi aplicada ao seu canal. Use o comando /option para modificar sua configuração.",
+    "option_no_channel": "Nenhuma informação de registro encontrada. Por favor, use o comando /register antes.",
+    "option_delete": "Excluir registro",
+    "option_record_deleted": "O registro foi excluído. Obrigado pela sua utilização!",
+    "option_finish": "Concluir",
+    "option_finished": "Configuração atualizada.",
+    "option_choose_channel": "Por favor, escolha um canal para configurar.",
+    "option_choose_item": "Agora, você pode modificar estes itens\nmodo: modo de trabalho do bot\nrecente: o número máximo de comentários mostrados no canal\nnotificar: receber notificações quando novos comentários ocorrerem\nlang: idioma dos botões de comentários e texto em seu canal",
+    "option_choose_mode_value": "Existem 3 modos.\nModo 0: Modo manual. Nenhuma mensagem de comentário será exibida automaticamente, a menos que o administrador do canal responda à postagem do canal com /comment.\nModo 1: Modo automático. O bot adiciona mensagem de comentário automaticamente, sem modificar a postagem original.\nModo 2: Modo Automático (beta). O bot modifica a postagem do canal para adicionar botões de comentário ou adiciona a mensagem de comentário, se falhar. O uso desse modo pode reduzir o número de mensagens de comentários em branco.\nPor favor, escolha o modo de funcionamento: ",
+    "option_choose_recent_value": "Em uma mensagem de comentário, apenas os comentários mais recentes serão exibidos. Por favor, escolha o número de comentários mostrados:",
+    "option_choose_notify_value": "Você pode escolher se receberá uma notificação quando houver um novo comentário. 0 significa não, 1 significa sim.",
+    "option_choose_lang_value": "Escolha o idioma dos botões de comentários e do texto em seu canal. Entrará em vigor quando a próxima mensagem for postada",
+    "option_update_success": "Configuração atualizada",
+    "option_update_failed": "Falha ao atualizar a configuração",
+    "clean_cmd_start": "Verificando. Por favor, aguarde...",
+    "clean_cmd_deleted": "Registro excluído",
+    "clean_cmd_set": "Agendamento automático definido",
+    "fwd_source": "De: ",
+    "prev_msg": "Comentário anterior",
+    "next_msg": "Próximo comentário",
+    "no_message_detail": "Nenhum detalhe de comentário encontrado",
+    "back_to_msg_list": "Voltar à lista de comentários",
+    "msg_from": "De: ",
+    "delete_msg": "Excluir comentário",
+    "delete_success": "Comentário excluído.",
+    "ban_user": "Banir usuário",
+    "unban_user": "Desbanir usuário",
+    "user_banned": "Usuário banido.",
+    "user_banned_failed": "Falha ao banir este usuário. Este usuário pode já ter sido banido.",
+    "user_unbanned": "Usuário desbanido.",
+    "banned_prompt": "Você não tem permissão para comentar neste canal.",
+    "new_comment_message": "Novo comentário recebido.",
+    "target_message": "Mensagem de destino: "
+}
+
 lang_config = {
     "zh-CN": helper_string_zh_cn,
     "en-US": helper_string_en_us
+    "pt-BR": helper_string_pt_br
 }
 
 for lang_code, lang_dict in lang_config.items():
