@@ -229,6 +229,10 @@ def option_item(bot, lang, chat_id, origin_message_id, args):
         InlineKeyboardButton(
             "lang",
             callback_data="option|%s,%s,lang" % (lang, args[1])
+        ),
+        InlineKeyboardButton(
+            "button",
+            callback_data="option|%s,%s,button" % (lang, args[1])
         )
     ]] + [[
         InlineKeyboardButton(
@@ -252,122 +256,29 @@ def option_item(bot, lang, chat_id, origin_message_id, args):
     )
 
 
-def option_mode(bot, lang, chat_id, origin_message_id, args):
+def option_key(bot, key, values, lang, chat_id, origin_message_id, args):
     # Prepare Keyboard
     motd_keyboard = [[
         InlineKeyboardButton(
-            "0",
-            callback_data="option|%s,%s,mode,0" % (lang, args[1])
-        ),
-        InlineKeyboardButton(
-            "1",
-            callback_data="option|%s,%s,mode,1" % (lang, args[1])
-        ),
-        InlineKeyboardButton(
-            "2",
-            callback_data="option|%s,%s,mode,2" % (lang, args[1])
+            value,
+            callback_data="option|%s,%s,%s,%s" % (lang, args[1], key, value)
         )
-    ]] + [[
+    for value in values]] + [[
         InlineKeyboardButton(
-            helper_global.value("option_finish", "", lang=lang),
-            callback_data="option_finish|%s" % lang
+            helper_global.value("option_back", "", lang=lang),
+            callback_data="option|%s,%s" % (lang, args[1])
         )
     ]]
 
     motd_markup = InlineKeyboardMarkup(motd_keyboard)
 
+    text = helper_global.value("option_choose_%s_value" % key, "", lang=lang)
+    if key == "button":
+        text = text % (", ".join(helper_const.DEFAULT_BUTTONS))
     bot.edit_message_text(
         chat_id=chat_id, 
         message_id=origin_message_id,
-        text=helper_global.value("option_choose_mode_value", "", lang=lang),
-        reply_markup=motd_markup
-    )
-
-    
-def option_recent(bot, lang, chat_id, origin_message_id, args):
-    # Prepare Keyboard
-    motd_keyboard = [[
-        InlineKeyboardButton(
-            "5",
-            callback_data="option|%s,%s,recent,5" % (lang, args[1])
-        ),
-        InlineKeyboardButton(
-            "10",
-            callback_data="option|%s,%s,recent,10" % (lang, args[1])
-        ),
-        InlineKeyboardButton(
-            "15",
-            callback_data="option|%s,%s,recent,15" % (lang, args[1])
-        ),
-        InlineKeyboardButton(
-            "20",
-            callback_data="option|%s,%s,recent,20" % (lang, args[1])
-        )
-    ]] + [[
-        InlineKeyboardButton(
-            helper_global.value("option_finish", "", lang=lang),
-            callback_data="option_finish|%s" % lang
-        )
-    ]]
-
-    motd_markup = InlineKeyboardMarkup(motd_keyboard)
-
-    bot.edit_message_text(
-        chat_id=chat_id, 
-        message_id=origin_message_id,
-        text=helper_global.value("option_choose_recent_value", "", lang=lang),
-        reply_markup=motd_markup
-    )
-
-
-def option_notify(bot, lang, chat_id, origin_message_id, args):
-    # Prepare Keyboard
-    motd_keyboard = [[
-        InlineKeyboardButton(
-            "0",
-            callback_data="option|%s,%s,notify,0" % (lang, args[1])
-        ),
-        InlineKeyboardButton(
-            "1",
-            callback_data="option|%s,%s,notify,1" % (lang, args[1])
-        )
-    ]] + [[
-        InlineKeyboardButton(
-            helper_global.value("option_finish", "", lang=lang),
-            callback_data="option_finish|%s" % lang
-        )
-    ]]
-
-    motd_markup = InlineKeyboardMarkup(motd_keyboard)
-
-    bot.edit_message_text(
-        chat_id=chat_id, 
-        message_id=origin_message_id,
-        text=helper_global.value("option_choose_notify_value", "", lang=lang),
-        reply_markup=motd_markup
-    )
-
-
-def option_lang(bot, lang, chat_id, origin_message_id, args):
-    # Prepare Keyboard
-    motd_keyboard = [[
-        InlineKeyboardButton(
-            c_lang,
-            callback_data="option|%s,%s,lang,%s" % (lang, args[1], c_lang)
-        )
-    for c_lang in helper_const.LANG_LIST]] + [[
-        InlineKeyboardButton(
-            helper_global.value("option_finish", "", lang=lang),
-            callback_data="option_finish|%s" % lang
-        )
-    ]]
-
-    motd_markup = InlineKeyboardMarkup(motd_keyboard)
-
-    bot.edit_message_text(
-        chat_id=chat_id, 
-        message_id=origin_message_id,
-        text=helper_global.value("option_choose_lang_value", "", lang=lang),
+        text=text,
         reply_markup=motd_markup
     )
 
@@ -493,10 +404,28 @@ def user_unban(bot, update, chat_id, origin_message_id, args):
     msg_detail(bot, update, chat_id, origin_message_id, ["msg_detail", channel_id, msg_id, row_id])
 
 
+def reaction(bot, update, chat_id, origin_message_id, user_id, args):
+    channel_id = int(args[1])
+    msg_id = int(args[2])
+    like_id = int(args[3])
+    config = helper_database.get_channel_config(channel_id)
+    if config is None:
+        return
+    channel_lang = config[1]
+    buttons = helper_database.get_button_options(channel_id, msg_id)
+    helper_database.add_reaction(channel_id, msg_id, user_id, like_id)
+    private_msg.update_dirty_msg(channel_id, msg_id)
+    bot.answer_callback_query(
+        callback_query_id=update.callback_query.id,
+        text=helper_global.value("like_recorded", "", lang=channel_lang) % buttons[like_id]
+    )
+
+
 def callback_query(bot, update):
     callback_data = update.callback_query.data
     origin_message_id = update.callback_query.message.message_id
     chat_id = update.callback_query.message.chat_id
+    user_id = update.callback_query.from_user.id
     args = callback_data.split(',')
     if "|" in args[0]:
         lang = args[0].split("|")[1]
@@ -510,6 +439,8 @@ def callback_query(bot, update):
         user_ban(bot, update, chat_id, origin_message_id, args)
     elif args[0] == 'user_unban':
         user_unban(bot, update, chat_id, origin_message_id, args)
+    elif args[0] == 'like':
+        reaction(bot, update, chat_id, origin_message_id, user_id, args)
     elif args[0].startswith('option_delete'):
         option_delete(bot, lang, chat_id, origin_message_id, args)
     elif args[0].startswith('option_finish'):
@@ -519,14 +450,17 @@ def callback_query(bot, update):
             option_index(bot, lang, chat_id, origin_message_id, args)
         if len(args) == 2:
             option_item(bot, lang, chat_id, origin_message_id, args)
-        elif len(args) == 3 and args[2] == "mode":
-            option_mode(bot, lang, chat_id, origin_message_id, args)
-        elif len(args) == 3 and args[2] == "recent":
-            option_recent(bot, lang, chat_id, origin_message_id, args)
-        elif len(args) == 3 and args[2] == "notify":
-            option_notify(bot, lang, chat_id, origin_message_id, args)
-        elif len(args) == 3 and args[2] == "lang":
-            option_lang(bot, lang, chat_id, origin_message_id, args)
+        elif len(args) == 3:
+            item_config = {
+                "mode": ["0", "1", "2"],
+                "recent": ["5", "10", "15", "20"],
+                "notify": ["0", "1"],
+                "lang": helper_const.LANG_LIST,
+                "button": ["0", "1", "2"]
+            }
+            key = args[2]
+            values = item_config[key]
+            option_key(bot, key, values, lang, chat_id, origin_message_id, args)
         elif len(args) == 4:
             option_update(bot, update, lang, chat_id, origin_message_id, args)
 

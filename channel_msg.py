@@ -18,10 +18,13 @@ def add_comment(bot, chat_id, config, message_id, media_group_id=None):
     channel_lang = config[1]
     recent = config[3]
 
+    if helper_database.check_reflect(chat_id, message_id):
+        return
+
     # Avoid duplicated comment for media group
     if media_group_id:
        last_media_group = helper_global.value(str(chat_id) + '_last_media_group', '0')
-       print(last_media_group)
+       # print(last_media_group)
        if last_media_group == media_group_id:
            return
        helper_global.assign(str(chat_id) + '_last_media_group', media_group_id)
@@ -193,27 +196,80 @@ def deforward(bot, msg, lang):
     return msg
     
 
+def add_like_buttons(bot, channel_lang, chat_id, message_id, buttons):
+    flag = 1
+    ref = helper_database.get_reflect_by_msg_id(chat_id, message_id)
+    if ref is not None:
+        flag = 0
+        message_id = ref[1]
+
+    # Prepare Keyboard
+    helper_database.add_button_options(chat_id, message_id, buttons)
+    helper_database.clear_reaction(chat_id, message_id)
+    motd_keyboard = [[
+        InlineKeyboardButton(
+            value,
+            callback_data="like,%s,%s,%d" % (chat_id, message_id, idx)
+        )
+    for idx, value in enumerate(buttons)]] + ([[
+        InlineKeyboardButton(
+            helper_global.value("add_comment", "Add Comment", lang=channel_lang),
+            url="http://telegram.me/%s?start=add_%d_%d" % (helper_global.value('bot_username', ''), chat_id, message_id)
+        ), 
+        InlineKeyboardButton(
+            helper_global.value("show_all_comments", "Show All", lang=channel_lang),
+            url="http://telegram.me/%s?start=show_%s_%d" % (helper_global.value('bot_username', ''), chat_id, message_id)
+        )
+    ]] if flag == 1 else [[]])
+    motd_markup = InlineKeyboardMarkup(motd_keyboard)
+
+    bot.edit_message_reply_markup(
+        chat_id=chat_id,
+        message_id=message_id,
+        reply_markup=motd_markup
+    )
+
+
 def channel_post_msg(bot, update):
     message = update.channel_post
+    if message is None:
+        return
     # print("Channel ID: %d, Channel Username: %s" % (message.chat_id, message.chat.username))
     chat_id = message.chat_id
     message_id = message.message_id
     config = helper_database.get_channel_config(chat_id)
     if config is None:
         return
-    lang, mode, recent = config[1], config[2], config[3]
-
-    # Auto Comment Mode
-    if mode == 1: 
-        add_comment(bot, chat_id, config, message_id, media_group_id=message.media_group_id)
-    elif mode == 2:
-        add_compact_comment(bot, chat_id, config, message_id, message)
+    lang, mode, recent, button_mode = config[1], config[2], config[3], config[7]
 
     # Manual Mode
-    elif mode == 0 and message.reply_to_message is not None and message.text == "/comment":
+    if message.reply_to_message is not None and message.text.startswith("/comment"):
         message_id = message.reply_to_message.message_id
         bot.delete_message(chat_id=chat_id, message_id=message.message_id)
+        if not helper_database.check_reflect(chat_id, message_id) and message.reply_to_message.reply_markup is None:
+            add_compact_comment(bot, chat_id, config, message_id, message.reply_to_message)
+        if not button_mode == 0:
+            buttons = message.text.split()[1:]
+            if button_mode == 1 and len(buttons) == 0:
+                buttons = helper_const.DEFAULT_BUTTONS
+            add_like_buttons(bot, lang, chat_id, message_id, buttons)
+
+    # Force Comment for Special Cases
+    elif message.reply_to_message is not None and message.text == "/forcecomment":
+        message_id = message.reply_to_message.message_id
+        bot.delete_message(chat_id=chat_id, message_id=message.message_id)
+        helper_database.delete_reflect(chat_id, message_id)
         add_compact_comment(bot, chat_id, config, message_id, message.reply_to_message)
+
+    # Auto Comment Mode
+    elif mode == 1: 
+        add_comment(bot, chat_id, config, message_id, media_group_id=message.media_group_id)
+        if button_mode == 1:
+            add_like_buttons(bot, lang, chat_id, message_id, helper_const.DEFAULT_BUTTONS)
+    elif mode == 2:
+        add_compact_comment(bot, chat_id, config, message_id, message)
+        if button_mode == 1:
+            add_like_buttons(bot, lang, chat_id, message_id, helper_const.DEFAULT_BUTTONS)
 
 
 class FilterChannelPost(BaseFilter):

@@ -63,14 +63,62 @@ def add_record(channel_id, msg_id, message):
 
 
 def update_comments(bot, channel_id, msg_id):
-    # update comments in channel
-    comment_id = helper_database.get_comment_id(channel_id, msg_id)
     config = helper_database.get_channel_config(channel_id)
     if config is None:
         return
     channel_lang = config[1]
     mode = config[2]
     recent = config[3]
+
+    # update comments in channel
+    comment_id = helper_database.get_comment_id(channel_id, msg_id)
+    if comment_id is None:
+        # If no comment message, just update Like buttons
+        buttons = helper_database.get_button_options(channel_id, msg_id)
+        stat = helper_database.get_reaction_stat(channel_id, msg_id)
+        # Prepare Keyboard
+        motd_keyboard = [[
+            InlineKeyboardButton(
+                value + (" (%d)" % stat[idx] if idx in stat else ""),
+                callback_data="like,%s,%s,%d" % (channel_id, msg_id, idx)
+            )
+        for idx, value in enumerate(buttons)]] + [[
+            InlineKeyboardButton(
+                helper_global.value("add_comment", "Add Comment", lang=channel_lang),
+                url="http://telegram.me/%s?start=add_%d_%d" % (helper_global.value('bot_username', ''), channel_id, msg_id)
+            ),
+            InlineKeyboardButton(
+                helper_global.value("show_all_comments", "Show All", lang=channel_lang),
+                url="http://telegram.me/%s?start=show_%s_%d" % (helper_global.value('bot_username', ''), channel_id, msg_id)
+            )
+        ]]
+        motd_markup = InlineKeyboardMarkup(motd_keyboard)
+        bot.edit_message_reply_markup(
+            chat_id=channel_id,
+            message_id=msg_id,
+            reply_markup=motd_markup
+        )
+        return
+
+    # Otherwise
+    # Update Like buttons
+    buttons = helper_database.get_button_options(channel_id, msg_id)
+    stat = helper_database.get_reaction_stat(channel_id, msg_id)
+    # Prepare Keyboard
+    motd_keyboard = [[
+        InlineKeyboardButton(
+            value + (" (%d)" % stat[idx] if idx in stat else ""),
+            callback_data="like,%s,%s,%d" % (channel_id, msg_id, idx)
+        )
+    for idx, value in enumerate(buttons)]]
+    motd_markup = InlineKeyboardMarkup(motd_keyboard)
+    bot.edit_message_reply_markup(
+        chat_id=channel_id,
+        message_id=msg_id,
+        reply_markup=motd_markup
+    )
+
+    # Update comment message
     records = helper_database.get_recent_records(channel_id, msg_id, recent)
 
     # Prepare Keyboard
@@ -141,7 +189,7 @@ def check_channel_message(bot, message):
         bot.send_message(chat_id=chat_id, text=helper_global.value("register_cmd_no_info", "", "all"))
         return
     try:
-        helper_database.add_channel_config(channel_id, helper_const.DEFAULT_LANG, 1, 10, channel_username, chat_id, 1)
+        helper_database.add_channel_config(channel_id, helper_const.DEFAULT_LANG, 1, 10, channel_username, chat_id, 1, 1)
     except:
         helper_global.assign(str(chat_id) + "_status", "0,0")
         bot.send_message(chat_id=chat_id, text=helper_global.value("register_cmd_failed", "", "all"))

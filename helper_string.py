@@ -36,14 +36,16 @@ helper_string_zh_cn = {
     "option_no_channel": "您还没有登记过频道信息，请先使用 /register 命令完成登记。",
     "option_delete": "删除频道记录",
     "option_record_deleted": "频道记录已删除，感谢您的使用！",
+    "option_back": "返回",
     "option_finish": "完成配置",
     "option_finished": "配置已完成",
     "option_choose_channel": "请选择一个频道以进行配置",
-    "option_choose_item": "请选择一个项目以进行配置\nmode: bot 的工作模式\nrecent: 在频道中显示的评论数量\nnotify: 新评论提醒\nlang: 评论功能使用的语言",
+    "option_choose_item": "请选择一个项目以进行配置\nmode: bot 的工作模式\nrecent: 在频道中显示的评论数量\nnotify: 新评论提醒\nlang: 评论功能使用的语言\nbutton: 点赞按钮显示方式",
     "option_choose_mode_value": "本 bot 有三种工作模式\n模式 0: 手动模式。当频道中新增消息时，bot 不会自动创建评论消息。当频道管理员使用 /comment 回复需要评论的原始消息时，bot 才会创建评论消息。如果 /comment 命令不起作用，请检查是否授予 bot 删除消息的权限。\n模式 1: 自动模式。当频道中新增消息时，bot 自动创建评论消息。该模式能保持原始频道消息不被修改。\n模式 2: 自动模式(beta)。当频道中新增消息时，bot 会尝试编辑原消息，显示添加评论按钮。如果编辑失败则直接创建评论消息。该模式能尽可能减少频道里的评论区数量。\n请选择您所需要的工作模式：",
     "option_choose_recent_value": "在频道中仅显示最近的若干条消息。请选择频道显示的最近条目数量：",
     "option_choose_notify_value": "您可以选择当频道收到新评论时是否开启提醒功能。0代表关闭，1代表开启。将在从下一条消息开始生效。",
     "option_choose_lang_value": "请选择频道中评论功能采用的语言。",
+    "option_choose_button_value": "请选择评论区点赞按钮显示的方式。\n0代表永不显示\n1代表自动显示，默认为%s\n2代表手动模式，可以自行设定显示内容",
     "option_update_success": "配置更新成功",
     "option_update_failed": "配置更新失败",
     "clean_cmd_start": "正在进行检查，请稍候...",
@@ -64,7 +66,8 @@ helper_string_zh_cn = {
     "user_unbanned": "用户已解封",
     "banned_prompt": "频道管理员不允许你进行评论操作",
     "new_comment_message": "您收到了新的评论",
-    "target_message": "目标消息："
+    "target_message": "目标消息：",
+    "like_recorded": "您觉得这很 %s"
 }
 
 helper_string_en_us = {
@@ -96,14 +99,16 @@ helper_string_en_us = {
     "option_no_channel": "No registration info found. Please use /register command first.",
     "option_delete": "Delete registration",
     "option_record_deleted": "Registration record is deleted. Thanks for your using!",
+    "option_back": "Go back",
     "option_finish": "Finish",
     "option_finished": "Config updated.",
     "option_choose_channel": "Please choose a channel to config.",
-    "option_choose_item": "Now, you can modify these items\nmode: working mode of the bot\nrecent: the maximum number of comments shown in channel\nnotify: receive notifications when new comments occur\nlang: language of comment buttons and text in your channel",
+    "option_choose_item": "Now, you can modify these items\nmode: working mode of the bot\nrecent: the maximum number of comments shown in channel\nnotify: receive notifications when new comments occur\nlang: language of comment buttons and text in your channel\nbutton: how to display Like buttons",
     "option_choose_mode_value": "There are 3 modes.\nMode 0: Manual Mode. No commment message will appear automatically, unless the channel admin reply the channel post with /comment .\nMode 1: Auto Mode. The bot adds comment message automatically, without modifying original post. \nMode 2: Auto Mode (beta). The bot modifies the channel post to add comment buttons, or add comment message if failed. Using this mode can reduce the number of blank comment message.\nPlease choose the working mode: ",
     "option_choose_recent_value": "In a comment message, only the most recent comments appear. Please choose the number of shown comments:",
     "option_choose_notify_value": "You can choose whether you will receive a notification if new comment comes. 0 stands for no, 1 stands for yes.",
     "option_choose_lang_value": "Choose the language of comment buttons and text in your channel. Take effect when the next message is coming",
+    "option_choose_button_value": "Please choose whether and how Like buttons work. \n0: Like buttons never appear.\n1: Like buttons appear automatically, default emojis are %s.\n2: manual mode. You can customize buttons in this mode.",
     "option_update_success": "Config updated",
     "option_update_failed": "Failed to update config",
     "clean_cmd_start": "Now checking, Please wait...",
@@ -124,7 +129,8 @@ helper_string_en_us = {
     "user_unbanned": "User unbanned.",
     "banned_prompt": "You are not allowed to leave comments in this channel.",
     "new_comment_message": "New comment received.",
-    "target_message": "Target message: "
+    "target_message": "Target message: ",
+    "like_recorded": "You %s it."
 }
 
 helper_string_pt_br = {

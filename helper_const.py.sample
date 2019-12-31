@@ -12,3 +12,4 @@ MODULE_NAME = ['start_cmd', 'help_cmd', 'cancel_cmd', 'sql_cmd', 'clean_cmd', 'r
 DATABASE_DIR = "."
 DEFAULT_LANG = "zh-CN"
 LANG_LIST = ["zh-CN", "pt-BR", "en-US"]
+DEFAULT_BUTTON = ["👍", "👎"]
