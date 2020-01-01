@@ -124,3 +124,28 @@ def parse_entity(src, entity_list):
         head = entity.offset + entity.length
     p_str += src[head:]
     return p_str
+
+
+def send_intro_template(bot, chat_id, lang, key, text_key):
+    # Prepare Keyboard
+    lang_list = helper_const.LANG_LIST
+    width = helper_const.LANG_WIDTH
+    current_lang = lang
+    motd_keyboard = [[
+        InlineKeyboardButton(
+            lang_list[width * idx + delta] + (" (*)" if lang_list[width * idx + delta] == current_lang else ""),
+            callback_data="%s|%s" % (key, lang_list[width * idx + delta])
+        ) for delta in range(width)
+    ] for idx in range(len(lang_list) // width)] + [[
+        InlineKeyboardButton(
+            lang_list[idx] + (" (*)" if lang_list[idx] == current_lang else ""),
+            callback_data="%s|%s" % (key, lang_list[idx])
+        )
+    for idx in range(width * (len(lang_list) // width), len(lang_list))]]
+
+    motd_markup = InlineKeyboardMarkup(motd_keyboard)
+    bot.send_message(
+        chat_id=chat_id, 
+        text=value(text_key, "", lang=current_lang),
+        reply_markup=motd_markup
+    )

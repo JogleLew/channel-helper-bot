@@ -4,6 +4,7 @@
 """ Channel Helper Bot """
 """ start_cmd.py """
 """ Copyright 2018, Jogle Lew """
+import helper_const
 import helper_global
 import helper_database
 import telegram
@@ -12,8 +13,8 @@ from telegram.ext import CommandHandler
 
 def start(bot, update, args):
     if args is None or len(args) == 0:
-        text = helper_global.value("start_cmd_text", "", "all")
-        bot.send_message(chat_id=update.message.chat_id, text=text)
+        chat_id = update.message.chat_id
+        helper_global.send_intro_template(bot, chat_id, helper_const.DEFAULT_LANG, "start", "start_cmd_text")
         return
     params = args[0].split("_")
     channel_id = int(params[1])

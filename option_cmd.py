@@ -20,13 +20,14 @@ def option(bot, update, args):
     chat_id = update.message.chat_id
     records = helper_database.get_channel_info_by_user(chat_id)
     if records is None or len(records) == 0:
-        bot.send_message(
-            chat_id=chat_id, 
-            text=helper_global.value("option_no_channel", "", lang="all")
-        )
+        helper_global.send_intro_template(bot, chat_id, helper_const.DEFAULT_LANG, "option_no_channel", "option_no_channel")
         return
 
     #Prepare keyboard
+    lang_list = helper_const.LANG_LIST
+    width = helper_const.LANG_WIDTH
+    current_lang = lang
+    key = "option"
     motd_keyboard = [[
         InlineKeyboardButton(
             "@" + record[1] if record[1] else "id: " + str(record[0]),
@@ -34,15 +35,20 @@ def option(bot, update, args):
         )
     ] for record in records] + [[
         InlineKeyboardButton(
-            lang,
-            callback_data="option|%s" % lang
-        )
-    for lang in helper_const.LANG_LIST]] + [[
-        InlineKeyboardButton(
             helper_global.value("option_finish", "", lang),
             callback_data="option_finish|%s" % lang
         )
-    ]]
+    ]] + [[
+        InlineKeyboardButton(
+            lang_list[width * idx + delta] + (" (*)" if lang_list[width * idx + delta] == current_lang else ""),
+            callback_data="%s|%s" % (key, lang_list[width * idx + delta])
+        ) for delta in range(width)
+    ] for idx in range(len(lang_list) // width)] + [[
+        InlineKeyboardButton(
+            lang_list[idx] + (" (*)" if lang_list[idx] == current_lang else ""),
+            callback_data="%s|%s" % (key, lang_list[idx])
+        )
+    for idx in range(width * (len(lang_list) // width), len(lang_list))]]
 
     motd_markup = InlineKeyboardMarkup(motd_keyboard)
     bot.send_message(

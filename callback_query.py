@@ -210,7 +210,7 @@ def option_finish(bot, lang, chat_id, origin_message_id):
     )
 
 
-def option_item(bot, lang, chat_id, origin_message_id, args):
+def option_item(bot, update, lang, chat_id, origin_message_id, args):
     # Prepare Keyboard
     motd_keyboard = [[
         InlineKeyboardButton(
@@ -248,6 +248,9 @@ def option_item(bot, lang, chat_id, origin_message_id, args):
 
     motd_markup = InlineKeyboardMarkup(motd_keyboard)
 
+    bot.answer_callback_query(
+        callback_query_id=update.callback_query.id
+    )
     bot.edit_message_text(
         chat_id=chat_id, 
         message_id=origin_message_id,
@@ -256,14 +259,30 @@ def option_item(bot, lang, chat_id, origin_message_id, args):
     )
 
 
-def option_key(bot, key, values, lang, chat_id, origin_message_id, args):
+def option_key(bot, update, key, values, lang, chat_id, origin_message_id, args):
+    config = helper_database.get_channel_config(args[1])
+    if config is None or len(config) == 0:
+        return
+    key2idx = {
+        "lang": 1,
+        "mode": 2,
+        "recent": 3,
+        "notify": 6,
+        "button": 7
+    }
     # Prepare Keyboard
+    width = helper_const.LANG_WIDTH
     motd_keyboard = [[
         InlineKeyboardButton(
-            value,
-            callback_data="option|%s,%s,%s,%s" % (lang, args[1], key, value)
-        )
-    for value in values]] + [[
+            values[idx * width + delta] + (" (*)" if str(values[idx * width + delta]) == str(config[key2idx[key]]) else ""),
+            callback_data="option|%s,%s,%s,%s" % (lang, args[1], key, values[idx * width + delta])
+        ) for delta in range(width)
+    ] for idx in range(len(values) // width)] + [[
+        InlineKeyboardButton(
+            values[idx] + (" (*)" if str(values[idx]) == str(config[key2idx[key]]) else ""),
+            callback_data="option|%s,%s,%s,%s" % (lang, args[1], key, values[idx])
+        ) 
+    for idx in range(width * (len(values) // width), len(values))]] + [[
         InlineKeyboardButton(
             helper_global.value("option_back", "", lang=lang),
             callback_data="option|%s,%s" % (lang, args[1])
@@ -275,6 +294,9 @@ def option_key(bot, key, values, lang, chat_id, origin_message_id, args):
     text = helper_global.value("option_choose_%s_value" % key, "", lang=lang)
     if key == "button":
         text = text % (", ".join(helper_const.DEFAULT_BUTTONS))
+    bot.answer_callback_query(
+        callback_query_id=update.callback_query.id
+    )
     bot.edit_message_text(
         chat_id=chat_id, 
         message_id=origin_message_id,
@@ -305,10 +327,10 @@ def option_update(bot, update, lang, chat_id, origin_message_id, args):
             callback_query_id=update.callback_query.id,
             text=helper_global.value("option_update_failed", "", lang=lang)
         )
-    option_item(bot, lang, chat_id, origin_message_id, args)
+    option_item(bot, update, lang, chat_id, origin_message_id, args)
 
 
-def option_index(bot, lang, chat_id, origin_message_id, args):
+def option_index(bot, update, lang, chat_id, origin_message_id, args):
     records = helper_database.get_channel_info_by_user(chat_id)
     if records is None or len(records) == 0:
         bot.send_message(
@@ -318,6 +340,10 @@ def option_index(bot, lang, chat_id, origin_message_id, args):
         return
 
     #Prepare keyboard
+    lang_list = helper_const.LANG_LIST
+    width = helper_const.LANG_WIDTH
+    current_lang = lang
+    key = "option"
     motd_keyboard = [[
         InlineKeyboardButton(
             "@" + record[1] if record[1] else "id: " + str(record[0]),
@@ -325,17 +351,25 @@ def option_index(bot, lang, chat_id, origin_message_id, args):
         )
     ] for record in records] + [[
         InlineKeyboardButton(
-            lang,
-            callback_data="option|%s" % lang
-        )
-    for lang in helper_const.LANG_LIST]] + [[
-        InlineKeyboardButton(
             helper_global.value("option_finish", "", lang),
             callback_data="option_finish|%s" % lang
         )
-    ]]
+    ]] + [[
+        InlineKeyboardButton(
+            lang_list[width * idx + delta] + (" (*)" if lang_list[width * idx + delta] == current_lang else ""),
+            callback_data="%s|%s" % (key, lang_list[width * idx + delta])
+        ) for delta in range(width)
+    ] for idx in range(len(lang_list) // width)] + [[
+        InlineKeyboardButton(
+            lang_list[idx] + (" (*)" if lang_list[idx] == current_lang else ""),
+            callback_data="%s|%s" % (key, lang_list[idx])
+        )
+    for idx in range(width * (len(lang_list) // width), len(lang_list))]]
 
     motd_markup = InlineKeyboardMarkup(motd_keyboard)
+    bot.answer_callback_query(
+        callback_query_id=update.callback_query.id
+    )
     bot.edit_message_text(
         chat_id=chat_id, 
         message_id=origin_message_id,
@@ -414,15 +448,48 @@ def reaction(bot, update, chat_id, origin_message_id, user_id, args):
     channel_lang = config[1]
     buttons = helper_database.get_button_options(channel_id, msg_id)
     helper_database.add_reaction(channel_id, msg_id, user_id, like_id)
-    private_msg.update_dirty_msg(channel_id, msg_id)
+    private_msg.update_dirty_msg(channel_id, msg_id, update_mode=0)
     bot.answer_callback_query(
         callback_query_id=update.callback_query.id,
         text=helper_global.value("like_recorded", "", lang=channel_lang) % buttons[like_id]
     )
 
 
+def intro_template(bot, update, lang, chat_id, origin_message_id, key, text_key):
+    lang_list = helper_const.LANG_LIST
+    width = helper_const.LANG_WIDTH
+    current_lang = lang
+    motd_keyboard = [[
+        InlineKeyboardButton(
+            lang_list[width * idx + delta] + (" (*)" if lang_list[width * idx + delta] == current_lang else ""),
+            callback_data="%s|%s" % (key, lang_list[width * idx + delta])
+        ) for delta in range(width)
+    ] for idx in range(len(lang_list) // width)] + [[
+        InlineKeyboardButton(
+            lang_list[idx] + (" (*)" if lang_list[idx] == current_lang else ""),
+            callback_data="%s|%s" % (key, lang_list[idx])
+        )
+    for idx in range(width * (len(lang_list) // width), len(lang_list))]]
+
+    motd_markup = InlineKeyboardMarkup(motd_keyboard)
+    bot.answer_callback_query(
+        callback_query_id=update.callback_query.id
+    )
+    bot.edit_message_text(
+        chat_id=chat_id, 
+        message_id=origin_message_id,
+        text=helper_global.value(text_key, "", lang=current_lang),
+        reply_markup=motd_markup
+    )
+
+
 def callback_query(bot, update):
     callback_data = update.callback_query.data
+    if update.callback_query.message is None:
+        bot.answer_callback_query(
+            callback_query_id=update.callback_query.id
+        )
+        return
     origin_message_id = update.callback_query.message.message_id
     chat_id = update.callback_query.message.chat_id
     user_id = update.callback_query.from_user.id
@@ -441,15 +508,33 @@ def callback_query(bot, update):
         user_unban(bot, update, chat_id, origin_message_id, args)
     elif args[0] == 'like':
         reaction(bot, update, chat_id, origin_message_id, user_id, args)
+    elif args[0].startswith('register'):
+        item = args[0].split("|")[0]
+        item_config = {
+            "register": "register_cmd_text",
+            "register_invalid": "register_cmd_invalid",
+            "register_not_admin": "register_cmd_not_admin",
+            "register_no_permission": "register_cmd_no_permission",
+            "register_no_info": "register_cmd_no_info",
+            "register_failed": "register_cmd_failed",
+            "register_success": "register_cmd_success",
+        }
+        intro_template(bot, update, lang, chat_id, origin_message_id, item, item_config[item])
+    elif args[0].startswith('start'):
+        intro_template(bot, update, lang, chat_id, origin_message_id, "start", "start_cmd_text")
+    elif args[0].startswith('help'):
+        intro_template(bot, update, lang, chat_id, origin_message_id, "help", "help_cmd_text")
+    elif args[0].startswith('option_no_channel'):
+        intro_template(bot, update, lang, chat_id, origin_message_id, "option_no_channel", "option_no_channel")
     elif args[0].startswith('option_delete'):
         option_delete(bot, lang, chat_id, origin_message_id, args)
     elif args[0].startswith('option_finish'):
         option_finish(bot, lang, chat_id, origin_message_id)
     elif args[0].startswith('option'):
         if len(args) == 1:
-            option_index(bot, lang, chat_id, origin_message_id, args)
+            option_index(bot, update, lang, chat_id, origin_message_id, args)
         if len(args) == 2:
-            option_item(bot, lang, chat_id, origin_message_id, args)
+            option_item(bot, update, lang, chat_id, origin_message_id, args)
         elif len(args) == 3:
             item_config = {
                 "mode": ["0", "1", "2"],
@@ -460,9 +545,13 @@ def callback_query(bot, update):
             }
             key = args[2]
             values = item_config[key]
-            option_key(bot, key, values, lang, chat_id, origin_message_id, args)
+            option_key(bot, update, key, values, lang, chat_id, origin_message_id, args)
         elif len(args) == 4:
             option_update(bot, update, lang, chat_id, origin_message_id, args)
+    else:
+        bot.answer_callback_query(
+            callback_query_id=update.callback_query.id
+        )
 
 
 _handler = CallbackQueryHandler(callback_query)

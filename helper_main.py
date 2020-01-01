@@ -120,7 +120,7 @@ bot = MQBot(token=helper_const.BOT_TOKEN, request=request, mqueue=q)
 bot_username = bot.get_me().username
 helper_global.value('bot', bot)
 helper_global.value('bot_username', bot_username)
-updater = Updater(bot=bot)
+updater = Updater(bot=bot, request_kwargs={'read_timeout': 6, 'connect_timeout': 7})
 dispatcher = updater.dispatcher
 job_queue = updater.job_queue
 
