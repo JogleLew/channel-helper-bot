@@ -264,6 +264,7 @@ def private_msg(bot, update):
             message_id=msg_id,
             reply_markup=None
         )
+        update_dirty_msg(channel_id, msg_id, update_mode=0)
 
     result = add_record(bot, channel_id, msg_id, message)
 
