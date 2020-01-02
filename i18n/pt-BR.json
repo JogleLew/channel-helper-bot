@@ -36,7 +36,7 @@
     "option_choose_recent_value": "Em uma mensagem de comentário, apenas os comentários mais recentes serão exibidos. Por favor, escolha o número de comentários mostrados:",
     "option_choose_notify_value": "Você pode escolher se receberá uma notificação quando houver um novo comentário. 0 significa não, 1 significa sim.",
     "option_choose_lang_value": "Escolha o idioma dos botões de comentários e do texto em seu canal. Entrará em vigor quando a próxima mensagem for postada",
-    "option_choose_button_value": "Por favor, escolha se e como os botões de reação irão funcionar.\n0: Os botões nunca aparecem.\n1: Os botões aparecem automaticamente. Os botões padrão são %s.\n2: Modo Manual. Você pode personalizar botões neste modo.\nPara escolher os botões de cada postagem (somente no modo 1 e no modo 2), responda à postagem do canal com /comment + "caracteres separados com espaço". Por exemplo, se você usar o comando \"/comment Eu ❤️ você\", a postagem terá 3 botões: \"Eu\", \"❤️\" e \"você\"",
+    "option_choose_button_value": "Por favor, escolha se e como os botões de reação irão funcionar.\n0: Os botões nunca aparecem.\n1: Os botões aparecem automaticamente. Os botões padrão são %s.\n2: Modo Manual. Você pode personalizar botões neste modo.\nPara escolher os botões de cada postagem (somente no modo 1 e no modo 2), responda à postagem do canal com /comment + \"caracteres separados com espaço\". Por exemplo, se você usar o comando \"/comment Eu ❤️ você\", a postagem terá 3 botões: \"Eu\", \"❤️\" e \"você\"",
     "option_update_success": "Configuração atualizada",
     "option_update_failed": "Falha ao atualizar a configuração",
     "clean_cmd_start": "Verificando. Por favor, aguarde...",
