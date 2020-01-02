@@ -45,7 +45,7 @@
     "fwd_source": "De: ",
     "prev_msg": "Comentário anterior",
     "next_msg": "Próximo comentário",
-    "no_message_detail": "Nenhum detalhe de comentário encontrado",
+    "no_message_detail": "Nenhum comentário encontrado",
     "back_to_msg_list": "Voltar à lista de comentários",
     "msg_from": "De: ",
     "delete_msg": "Excluir comentário",
@@ -59,7 +59,7 @@
     "new_comment_message": "Novo comentário recebido.",
     "new_reply_message": "Nova resposta recebida.",
     "target_message": "Mensagem de destino: ",
-    "like_recorded": "Você %s.",
+    "like_recorded": "Você enviou %s.",
     "comment_refreshing": "Atualizando...",
     "reply_to": "Responder para: "
 }
