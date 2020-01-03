@@ -86,7 +86,7 @@ def add_compact_comment(bot, chat_id, config, message_id, message):
             message_id=message_id,
             reply_markup=motd_markup
         ).result()
-    except:
+    except telegram.error.BadRequest:
         add_comment(bot, chat_id, config, message_id)
 
 
