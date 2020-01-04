@@ -19,7 +19,7 @@ from telegram.utils.request import Request
 from ninesix import Logger
 
 # config logger
-logger = Logger("channel_helper", log_level=0, preserve=False)
+logger = Logger("channel_helper", log_level=0, preserve=True)
 
 # import constant, strings, database
 helper_const = importlib.import_module('helper_const')

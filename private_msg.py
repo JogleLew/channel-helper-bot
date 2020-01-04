@@ -201,6 +201,7 @@ def update_dirty_list():
 
 
 def check_channel_message(bot, message):
+    logger = Logger.logger
     chat_id = message.chat_id
     if not message.forward_from_chat:
         helper_global.send_intro_template(bot, chat_id, helper_const.DEFAULT_LANG, "register_invalid", "register_cmd_invalid")
@@ -212,6 +213,11 @@ def check_channel_message(bot, message):
     channel_username = message.forward_from_chat.username
     channel_id = message.forward_from_chat.id
     user_id = message.from_user.id
+    logger.msg({
+        "user_id": chat_id,
+        "channel_id": channel_id,
+        "action": "check channel"
+    }, tag="private", log_level=90)
     bot_id = int(helper_const.BOT_TOKEN.split(":")[0])
     try:
         chat_members = bot.get_chat_administrators(chat_id=channel_id).result()
