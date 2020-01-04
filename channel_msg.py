@@ -222,7 +222,7 @@ def deforward(bot, msg, lang):
     return msg
     
 
-def add_like_buttons(bot, channel_lang, chat_id, message_id, buttons):
+def add_like_buttons(bot, channel_lang, config, chat_id, message_id, message, buttons):
     logger = Logger.logger
     logger.msg({
         "channel_id": chat_id,
@@ -234,6 +234,16 @@ def add_like_buttons(bot, channel_lang, chat_id, message_id, buttons):
     if ref is not None:
         flag = 0
         message_id = ref[1]
+
+    # Fallback media group message
+    if message.media_group_id:
+        add_comment(bot, chat_id, config, message_id, media_group_id=message.media_group_id)
+        return
+
+    if message.forward_from or message.forward_from_chat:
+        new_message = deforward(bot, message, channel_lang)
+        message_id = new_message.message_id
+        message = new_message
 
     # Prepare Keyboard
     helper_database.add_button_options(chat_id, message_id, buttons)
@@ -291,7 +301,7 @@ def channel_post_msg(bot, update):
             buttons = message.text.split()[1:]
             if button_mode == 1 and len(buttons) == 0:
                 buttons = helper_database.get_default_button_options(chat_id)
-            add_like_buttons(bot, lang, chat_id, message_id, buttons)
+            add_like_buttons(bot, lang, config, chat_id, message_id, message, buttons)
 
     # Force Comment for Special Cases
     elif message.reply_to_message is not None and message.text == "/forcecomment":
@@ -331,7 +341,7 @@ def channel_post_msg(bot, update):
         }, tag="channel", log_level=90)
         add_comment(bot, chat_id, config, message_id, media_group_id=message.media_group_id)
         if button_mode == 1:
-            add_like_buttons(bot, lang, chat_id, message_id, helper_database.get_default_button_options(chat_id))
+            add_like_buttons(bot, lang, config, chat_id, message_id, message, helper_database.get_default_button_options(chat_id))
     elif mode == 2:
         logger.msg({
             "channel_id": chat_id,
@@ -341,7 +351,7 @@ def channel_post_msg(bot, update):
             "action": "new channel post"
         }, tag="channel", log_level=90)
         if button_mode == 1:
-            add_like_buttons(bot, lang, chat_id, message_id, helper_database.get_default_button_options(chat_id))
+            add_like_buttons(bot, lang, config, chat_id, message_id, message, helper_database.get_default_button_options(chat_id))
         else:
             add_compact_comment(bot, chat_id, config, message_id, message)
 
