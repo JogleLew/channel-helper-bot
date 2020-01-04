@@ -290,7 +290,7 @@ def channel_post_msg(bot, update):
         if not button_mode == 0:
             buttons = message.text.split()[1:]
             if button_mode == 1 and len(buttons) == 0:
-                buttons = helper_const.DEFAULT_BUTTONS
+                buttons = helper_database.get_default_button_options(chat_id)
             add_like_buttons(bot, lang, chat_id, message_id, buttons)
 
     # Force Comment for Special Cases
@@ -307,6 +307,19 @@ def channel_post_msg(bot, update):
         helper_database.delete_reflect(chat_id, message_id)
         add_compact_comment(bot, chat_id, config, message_id, message.reply_to_message)
 
+    # Set default buttons
+    elif message.text.startswith("/defaultbuttons"):
+        logger.msg({
+            "channel_id": chat_id,
+            "msg_id": message_id,
+            "mode": mode,
+            "button": button_mode,
+            "action": "/defaultbuttons"
+        }, tag="channel", log_level=90)
+        buttons = message.text.split()[1:]
+        bot.delete_message(chat_id=chat_id, message_id=message.message_id)
+        helper_database.add_button_options(chat_id, 0, buttons)
+
     # Auto Comment Mode
     elif mode == 1: 
         logger.msg({
@@ -318,7 +331,7 @@ def channel_post_msg(bot, update):
         }, tag="channel", log_level=90)
         add_comment(bot, chat_id, config, message_id, media_group_id=message.media_group_id)
         if button_mode == 1:
-            add_like_buttons(bot, lang, chat_id, message_id, helper_const.DEFAULT_BUTTONS)
+            add_like_buttons(bot, lang, chat_id, message_id, helper_database.get_default_button_options(chat_id))
     elif mode == 2:
         logger.msg({
             "channel_id": chat_id,
@@ -328,7 +341,7 @@ def channel_post_msg(bot, update):
             "action": "new channel post"
         }, tag="channel", log_level=90)
         if button_mode == 1:
-            add_like_buttons(bot, lang, chat_id, message_id, helper_const.DEFAULT_BUTTONS)
+            add_like_buttons(bot, lang, chat_id, message_id, helper_database.get_default_button_options(chat_id))
         else:
             add_compact_comment(bot, chat_id, config, message_id, message)
 

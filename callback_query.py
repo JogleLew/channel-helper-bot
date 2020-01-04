@@ -294,7 +294,7 @@ def option_key(bot, update, key, values, lang, chat_id, origin_message_id, args)
 
     text = helper_global.value("option_choose_%s_value" % key, "", lang=lang)
     if key == "button":
-        text = text % (", ".join(helper_const.DEFAULT_BUTTONS))
+        text = text % (", ".join(helper_database.get_default_button_options(args[1])))
     bot.answer_callback_query(
         callback_query_id=update.callback_query.id
     )

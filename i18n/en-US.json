@@ -36,7 +36,7 @@
     "option_choose_recent_value": "In a comment message, only the most recent comments appear. Please choose the number of shown comments:",
     "option_choose_notify_value": "You can choose whether you will receive a notification if new comment comes. 0 stands for no, 1 stands for yes.",
     "option_choose_lang_value": "Choose the language of comment buttons and text in your channel. Take effect when the next message is coming",
-    "option_choose_button_value": "Please choose whether and how Like buttons work. \n0: Like buttons never appear.\n1: Like buttons appear automatically, default buttons are %s.\n2: manual mode. You can customize buttons in this mode.\nIn mode 1 and mode 2, reply the channel post with /comment + blank-seperated text, then new Like buttons will be added/replaced below the channel post. e.g. If you use the command \"/comment I ❤️ you\", you will get 3 buttons: \"I\", \"❤️\" and \"you\"",
+    "option_choose_button_value": "Please choose whether and how Like buttons work. \n0: Like buttons never appear.\n1: Like buttons appear automatically, default buttons are %s. You can send /defaultbuttons + blank-seperated text in your channel to change the default buttons.\n2: manual mode. You can customize buttons in this mode.\nIn mode 1 and mode 2, reply the channel post with /comment + blank-seperated text, then new Like buttons will be added/replaced below the channel post. e.g. If you use the command \"/comment I ❤️ you\", you will get 3 buttons: \"I\", \"❤️\" and \"you\"",
     "option_update_success": "Config updated",
     "option_update_failed": "Failed to update config",
     "clean_cmd_start": "Now checking, Please wait...",

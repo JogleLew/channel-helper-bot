@@ -154,8 +154,22 @@ def get_button_options(chat_id, msg_id):
     script = "SELECT options FROM button WHERE chat_id = ? AND msg_id = ?"
     params = [str(chat_id), str(msg_id)]
     result = list(execute(script, params))
+    if len(result) > 0:
+        return result[0][0].split()
+    script = "SELECT options FROM button WHERE chat_id = ? AND msg_id = ?"
+    params = [str(chat_id), str(0)]
+    result = list(execute(script, params))
+    if len(result) > 0:
+        return result[0][0].split()
+    return helper_const.DEFAULT_BUTTONS
+
+
+def get_default_button_options(chat_id):
+    script = "SELECT options FROM button WHERE chat_id = ? AND msg_id = ?"
+    params = [str(chat_id), str(0)]
+    result = list(execute(script, params))
     if len(result) == 0:
-        return []
+        return helper_const.DEFAULT_BUTTONS
     return result[0][0].split()
 
 
