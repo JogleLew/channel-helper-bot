@@ -308,7 +308,7 @@ def channel_post_msg(bot, update):
         add_compact_comment(bot, chat_id, config, message_id, message.reply_to_message)
 
     # Set default buttons
-    elif message.text.startswith("/defaultbuttons"):
+    elif message.text is not None and message.text.startswith("/defaultbuttons"):
         logger.msg({
             "channel_id": chat_id,
             "msg_id": message_id,
