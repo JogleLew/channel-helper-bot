@@ -10,16 +10,21 @@ import helper_database
 import telegram
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CommandHandler
+from ninesix import Logger
 
 def start(bot, update, args):
+    logger = Logger.logger
     if args is None or len(args) == 0:
         chat_id = update.message.chat_id
+        logger.msg({"user_id": chat_id}, tag="start", log_level=80)
         helper_global.send_intro_template(bot, chat_id, helper_const.DEFAULT_LANG, "start", "start_cmd_text")
         return
+
     params = args[0].split("_")
     channel_id = int(params[1])
     msg_id = int(params[2])
     chat_id = update.message.chat_id
+    logger.msg({"user_id": chat_id, "args": args}, tag="start", log_level=90)
     if chat_id < 0:
         return
 

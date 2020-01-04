@@ -13,6 +13,7 @@ import telegram
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, \
         InputMediaAudio, InputMediaDocument, InputMediaPhoto, InputMediaVideo
 from telegram.ext import CallbackQueryHandler
+from ninesix import Logger
 
 def show_msg(bot, update, origin_message_id, chat_id, args):
     channel_id = int(args[1])
@@ -484,6 +485,7 @@ def intro_template(bot, update, lang, chat_id, origin_message_id, key, text_key)
 
 
 def callback_query(bot, update):
+    logger = Logger.logger
     callback_data = update.callback_query.data
     if update.callback_query.message is None:
         bot.answer_callback_query(
@@ -494,6 +496,12 @@ def callback_query(bot, update):
     chat_id = update.callback_query.message.chat_id
     user_id = update.callback_query.from_user.id
     args = callback_data.split(',')
+    logger.msg({
+        "channel_id": chat_id,
+        "msg_id": origin_message_id,
+        "user_id": user_id,
+        "callback": callback_data
+    }, tag="callback", log_level=90)
     if "|" in args[0]:
         lang = args[0].split("|")[1]
     if args[0] == 'msg':

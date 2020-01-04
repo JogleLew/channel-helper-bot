@@ -11,10 +11,17 @@ import telegram
 from telegram.utils.helpers import effective_message_type
 from telegram.ext import MessageHandler, Filters, BaseFilter
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from ninesix import Logger
 
 parse_entity = helper_global.parse_entity
 
 def add_comment(bot, chat_id, config, message_id, media_group_id=None):
+    logger = Logger.logger
+    logger.msg({
+        "channel_id": chat_id,
+        "msg_id": message_id,
+        "action": "normal comment"
+    }, tag="channel", log_level=80)
     channel_lang = config[1]
     recent = config[3]
 
@@ -55,6 +62,12 @@ def add_comment(bot, chat_id, config, message_id, media_group_id=None):
 
 
 def add_compact_comment(bot, chat_id, config, message_id, message):
+    logger = Logger.logger
+    logger.msg({
+        "channel_id": chat_id,
+        "msg_id": message_id,
+        "action": "compact comment"
+    }, tag="channel", log_level=80)
     channel_lang = config[1]
 
     # Fallback media group message
@@ -87,7 +100,14 @@ def add_compact_comment(bot, chat_id, config, message_id, message):
             reply_markup=motd_markup
         ).result()
     except telegram.error.BadRequest:
+        logger.msg({
+            "channel_id": chat_id,
+            "msg_id": message_id,
+            "action": "compact -> normal"
+        }, tag="channel", log_level=80)
         add_comment(bot, chat_id, config, message_id)
+    except:
+        pass
 
 
 def avoidNone(s):
@@ -97,8 +117,14 @@ def avoidNone(s):
 
 
 def deforward(bot, msg, lang):
+    logger = Logger.logger
     chat_id = msg.chat_id
     message_id = msg.message_id
+    logger.msg({
+        "channel_id": chat_id,
+        "msg_id": message_id,
+        "action": "messaage deforward"
+    }, tag="channel", log_level=80)
 
     # Generate forward info
     has_msg_link = False
@@ -197,6 +223,12 @@ def deforward(bot, msg, lang):
     
 
 def add_like_buttons(bot, channel_lang, chat_id, message_id, buttons):
+    logger = Logger.logger
+    logger.msg({
+        "channel_id": chat_id,
+        "msg_id": message_id,
+        "action": "add like buttons"
+    }, tag="channel", log_level=80)
     flag = 1
     ref = helper_database.get_reflect_by_msg_id(chat_id, message_id)
     if ref is not None:
@@ -231,10 +263,10 @@ def add_like_buttons(bot, channel_lang, chat_id, message_id, buttons):
 
 
 def channel_post_msg(bot, update):
+    logger = Logger.logger
     message = update.channel_post
     if message is None:
         return
-    # print("Channel ID: %d, Channel Username: %s" % (message.chat_id, message.chat.username))
     chat_id = message.chat_id
     message_id = message.message_id
     config = helper_database.get_channel_config(chat_id)
@@ -244,6 +276,13 @@ def channel_post_msg(bot, update):
 
     # Manual Mode
     if message.reply_to_message is not None and message.text.startswith("/comment"):
+        logger.msg({
+            "channel_id": chat_id,
+            "msg_id": message_id,
+            "mode": mode,
+            "button": button_mode,
+            "action": "/comment"
+        }, tag="channel", log_level=90)
         message_id = message.reply_to_message.message_id
         bot.delete_message(chat_id=chat_id, message_id=message.message_id)
         if not helper_database.check_reflect(chat_id, message_id) and message.reply_to_message.reply_markup is None:
@@ -256,6 +295,13 @@ def channel_post_msg(bot, update):
 
     # Force Comment for Special Cases
     elif message.reply_to_message is not None and message.text == "/forcecomment":
+        logger.msg({
+            "channel_id": chat_id,
+            "msg_id": message_id,
+            "mode": mode,
+            "button": button_mode,
+            "action": "/forcecomment"
+        }, tag="channel", log_level=90)
         message_id = message.reply_to_message.message_id
         bot.delete_message(chat_id=chat_id, message_id=message.message_id)
         helper_database.delete_reflect(chat_id, message_id)
@@ -263,13 +309,28 @@ def channel_post_msg(bot, update):
 
     # Auto Comment Mode
     elif mode == 1: 
+        logger.msg({
+            "channel_id": chat_id,
+            "msg_id": message_id,
+            "mode": mode,
+            "button": button_mode,
+            "action": "new channel post"
+        }, tag="channel", log_level=90)
         add_comment(bot, chat_id, config, message_id, media_group_id=message.media_group_id)
         if button_mode == 1:
             add_like_buttons(bot, lang, chat_id, message_id, helper_const.DEFAULT_BUTTONS)
     elif mode == 2:
-        add_compact_comment(bot, chat_id, config, message_id, message)
+        logger.msg({
+            "channel_id": chat_id,
+            "msg_id": message_id,
+            "mode": mode,
+            "button": button_mode,
+            "action": "new channel post"
+        }, tag="channel", log_level=90)
         if button_mode == 1:
             add_like_buttons(bot, lang, chat_id, message_id, helper_const.DEFAULT_BUTTONS)
+        else:
+            add_compact_comment(bot, chat_id, config, message_id, message)
 
 
 class FilterChannelPost(BaseFilter):

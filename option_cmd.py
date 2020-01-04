@@ -11,13 +11,18 @@ import telegram
 import telegram
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CommandHandler
+from ninesix import Logger
 
 def option(bot, update, args):
+    logger = Logger.logger
     if args is None or len(args) == 0:
         lang = helper_const.DEFAULT_LANG
     else:
         lang = args[0]
     chat_id = update.message.chat_id
+    logger.msg({
+        "user_id": chat_id
+    }, tag="option", log_level=80)
     records = helper_database.get_channel_info_by_user(chat_id)
     if records is None or len(records) == 0:
         helper_global.send_intro_template(bot, chat_id, helper_const.DEFAULT_LANG, "option_no_channel", "option_no_channel")

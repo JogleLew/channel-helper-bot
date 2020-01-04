@@ -11,8 +11,10 @@ import telegram
 import threading
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import MessageHandler, Filters
+from ninesix import Logger
 
 def add_record(bot, channel_id, msg_id, message):
+    logger = Logger.logger
     ori_msg_id = message.message_id
     user = message.from_user
     username = user.username
@@ -79,6 +81,12 @@ def add_record(bot, channel_id, msg_id, message):
                         channel_lang, channel_username = config[1], config[4]
                         msg_content = "<b>(➤%s) </b> " % target_name.replace('<', '&lt;').replace('>', '&gt;') + msg_content
                         if channel_username is not None:
+                            logger.msg({
+                                "channel_id": channel_id,
+                                "msg_id": msg_id,
+                                "target_user": target_user_id,
+                                "action": "notify reply"
+                            }, tag="private", log_level=80)
                             bot.send_message(
                                 chat_id=target_user_id, 
                                 text=helper_global.value("new_reply_message", "You receive a reply message.", lang=channel_lang) + "\n" + helper_global.value("target_message", "", lang=channel_lang) + "https://t.me/%s/%d" % (channel_username, target_msg_id) 
@@ -90,12 +98,18 @@ def add_record(bot, channel_id, msg_id, message):
 
 
 def update_comments(bot, channel_id, msg_id, update_mode):
+    logger = Logger.logger
     config = helper_database.get_channel_config(channel_id)
     if config is None:
         return
     channel_lang = config[1]
     mode = config[2]
     recent = config[3]
+    logger.msg({
+        "channel_id": channel_id,
+        "msg_id": msg_id,
+        "update_mode": update_mode
+    }, tag="private", log_level=80)
 
     # update comments in channel
     comment_id = helper_database.get_comment_id(channel_id, msg_id)
@@ -229,11 +243,15 @@ def check_channel_message(bot, message):
 
 
 def private_msg(bot, update):
+    logger = Logger.logger
     message = update.edited_message if update.edited_message else update.message
-    # print(message)
     chat_id = message.chat_id
-
     args = helper_global.value(str(chat_id) + "_status", "0,0")
+    logger.msg({
+        "user_id": chat_id,
+        "status": args
+    }, tag="private", log_level=90)
+
     params = args.split(",")
     channel_id = int(params[0])
     msg_id = int(params[1])
@@ -249,9 +267,21 @@ def private_msg(bot, update):
         return
     channel_lang = config[1]
     recent, username, admin_id, notify = config[3], config[4], config[5], config[6]
+    logger.msg({
+        "user_id": chat_id,
+        "channel_id": channel_id,
+        "msg_id": msg_id,
+        "action": "add comment"
+    }, tag="private", log_level=90)
 
     # For Auto Mode = 2
     if not comment_exist:
+        logger.msg({
+            "user_id": chat_id,
+            "channel_id": channel_id,
+            "msg_id": msg_id,
+            "action": "add comment area"
+        }, tag="private", log_level=80)
         comment_message = bot.send_message(
             chat_id=channel_id, 
             text=helper_global.value("comment_refreshing", "Refreshing...", lang=channel_lang), 
@@ -259,11 +289,11 @@ def private_msg(bot, update):
             parse_mode=telegram.ParseMode.HTML
         ).result()
         helper_database.add_reflect(channel_id, msg_id, comment_message.message_id)
-        bot.edit_message_reply_markup(
-            chat_id=channel_id,
-            message_id=msg_id,
-            reply_markup=None
-        )
+        #bot.edit_message_reply_markup(
+        #    chat_id=channel_id,
+        #    message_id=msg_id,
+        #    reply_markup=None
+        #)
         update_dirty_msg(channel_id, msg_id, update_mode=0)
 
     result = add_record(bot, channel_id, msg_id, message)
@@ -271,6 +301,13 @@ def private_msg(bot, update):
     # Update Dirty List
     update_dirty_msg(channel_id, msg_id)
     if notify == 1 and not int(chat_id) == int(admin_id):
+        logger.msg({
+            "user_id": chat_id,
+            "channel_id": channel_id,
+            "msg_id": msg_id,
+            "admin_id": admin_id,
+            "action": "notify channel owner"
+        }, tag="private", log_level=80)
         if username is not None:
             bot.send_message(
                 chat_id=admin_id, 

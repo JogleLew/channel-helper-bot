@@ -16,9 +16,10 @@ import telegram.bot
 from telegram.ext import messagequeue as mq
 from telegram.ext import Updater, CommandHandler
 from telegram.utils.request import Request
+from ninesix import Logger
 
 # config logger
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+logger = Logger("channel_helper", log_level=0, preserve=False)
 
 # import constant, strings, database
 helper_const = importlib.import_module('helper_const')
@@ -36,6 +37,7 @@ def reload_admin_list():
 
 
 reload_admin_list()
+logger.msg("Admin List: " + str(helper_global.value('admin_list', [])), "main", log_level=100)
 
 # config bot
 class MQBot(telegram.bot.Bot):
@@ -117,10 +119,11 @@ class MQBot(telegram.bot.Bot):
 q = mq.MessageQueue(all_burst_limit=3, all_time_limit_ms=3000)
 request = Request(con_pool_size=8)
 bot = MQBot(token=helper_const.BOT_TOKEN, request=request, mqueue=q)
+logger.msg(bot.get_me(), tag="main", log_level=100)
 bot_username = bot.get_me().username
 helper_global.value('bot', bot)
 helper_global.value('bot_username', bot_username)
-updater = Updater(bot=bot, request_kwargs={'read_timeout': 6, 'connect_timeout': 7})
+updater = Updater(bot=bot, request_kwargs={'read_timeout': 6, 'connect_timeout': 7}, use_context=False)
 dispatcher = updater.dispatcher
 job_queue = updater.job_queue
 
@@ -157,6 +160,7 @@ def bot_reload(bot, update):
     try:
         command_module = []
         for module_name in helper_const.MODULE_NAME:
+            logger.msg("Reloading module \"%s\"..." % module_name, tag="main", log_level=100)
             current_module = importlib.import_module(module_name)
             current_module = importlib.reload(current_module)
             command_module.append(current_module)
@@ -175,6 +179,7 @@ dispatcher.add_handler(reload_handler)
 # initial other commands
 command_module = []
 for module_name in helper_const.MODULE_NAME:
+    logger.msg("Loading module \"%s\"..." % module_name, tag="main", log_level=100)
     current_module = importlib.import_module(module_name)
     command_module.append(current_module)
     dispatcher.add_handler(current_module._handler)

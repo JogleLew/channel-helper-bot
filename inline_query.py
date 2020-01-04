@@ -11,6 +11,7 @@ import helper_database
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram import InlineQueryResultArticle, InputTextMessageContent
 from telegram.ext import InlineQueryHandler
+from ninesix import Logger
 
 def inline_caps(bot, update):
     query = update.inline_query.query
