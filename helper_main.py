@@ -184,6 +184,11 @@ for module_name in helper_const.MODULE_NAME:
     command_module.append(current_module)
     dispatcher.add_handler(current_module._handler)
 
+def error(bot, update, error):
+    logger.msg("Update: %s, Error: %s" % (update, error), tag="error", log_level=100)
+
+
+dispatcher.add_error_handler(error)
 
 updater.start_polling()
 
