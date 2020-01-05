@@ -61,6 +61,6 @@
     "target_message": "Target message: ",
     "like_recorded": "You %s it.",
     "comment_refreshing": "Refreshing...",
-    "reply_to": "Reply to",
+    "reply_to": "Reply to ",
     "reply_prompt": "Write comment first, then choose a comment to reply."
 }
