@@ -40,10 +40,25 @@ def start(bot, update, args):
 
     if params[0] == "add":
         helper_global.assign(str(chat_id) + "_status", params[1] + "," + params[2])
+        motd_keyboard = [[
+            InlineKeyboardButton(
+                helper_global.value("reply_to", "Reply", lang=channel_lang) + "...",
+                switch_inline_query_current_chat=" "
+            )
+        ]]
+        motd_markup = InlineKeyboardMarkup(motd_keyboard)
         if username is not None:
-            bot.send_message(chat_id=update.message.chat_id, text=helper_global.value("start_comment_mode", "", lang=channel_lang) + "\n" + helper_global.value("target_message", "", lang=channel_lang) + "https://t.me/%s/%d" % (username, msg_id))
+            bot.send_message(
+                chat_id=update.message.chat_id, 
+                text=helper_global.value("start_comment_mode", "", lang=channel_lang) + "\n" + helper_global.value("target_message", "", lang=channel_lang) + "https://t.me/%s/%d" % (username, msg_id),
+                reply_markup=motd_markup
+            )
         else:
-            bot.send_message(chat_id=update.message.chat_id, text=helper_global.value("start_comment_mode", "", lang=channel_lang))
+            bot.send_message(
+                chat_id=update.message.chat_id, 
+                text=helper_global.value("start_comment_mode", "", lang=channel_lang),
+                reply_markup=motd_markup
+            )
     elif params[0] == "show":
         offset = 0
         channel_username = config[4]

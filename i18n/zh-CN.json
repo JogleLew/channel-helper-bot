@@ -61,5 +61,6 @@
     "target_message": "目标消息：",
     "like_recorded": "您觉得这很 %s",
     "comment_refreshing": "评论区刷新中...",
-    "reply_to": "回复 "
+    "reply_to": "回复 ",
+    "reply_prompt": "先填写回复信息，再选择需要回复的评论"
 }

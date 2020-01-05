@@ -14,15 +14,12 @@ from telegram.ext import InlineQueryHandler
 from ninesix import Logger
 
 def inline_caps(bot, update):
-    query = update.inline_query.query
-    if len(query) == 0:
-        bot.answer_inline_query(update.inline_query.id, [])
     user_id = update.inline_query.from_user.id
-
     args = helper_global.value(str(user_id) + "_status", "0,0")
     params = args.split(",")
     channel_id = int(params[0])
     msg_id = int(params[1])
+
     if channel_id == 0:
         bot.answer_inline_query(update.inline_query.id, [])
         return
@@ -33,6 +30,17 @@ def inline_caps(bot, update):
         return
     channel_lang = config[1]
     recent = config[3]
+
+    query = update.inline_query.query
+    if len(query.strip()) == 0:
+        bot.answer_inline_query(
+            update.inline_query.id, [], 
+            switch_pm_text=helper_global.value("reply_prompt", "comment here first", lang=channel_lang), 
+            switch_pm_parameter="0", 
+            cache_time=0, 
+            is_personal=True
+        )
+        return
 
     records = helper_database.get_recent_records(channel_id, msg_id, recent, 0)
     results = []
@@ -58,7 +66,13 @@ def inline_caps(bot, update):
                 ]])
             )
         )
-    bot.answer_inline_query(update.inline_query.id, results)
+    bot.answer_inline_query(
+            update.inline_query.id, results,
+            switch_pm_text=helper_global.value("reply_prompt", "comment here first", lang=channel_lang), 
+            switch_pm_parameter="0", 
+            cache_time=0, 
+            is_personal=True
+    )
 
 _handler = InlineQueryHandler(inline_caps)
 
