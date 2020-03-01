@@ -92,7 +92,11 @@ def add_record(bot, channel_id, msg_id, message):
                                 text=helper_global.value("new_reply_message", "You receive a reply message.", lang=channel_lang) + "\n" + helper_global.value("target_message", "", lang=channel_lang) + "https://t.me/%s/%d" % (channel_username, target_msg_id) 
                             )
                         else:
-                            bot.send_message(chat_id=target_user_id, text=helper_global.value("new_reply_message", "You receive a reply message.", lang=channel_lang))
+                            link_id = abs(channel_id) % 10000000000
+                            bot.send_message(
+                                chat_id=target_user_id, 
+                                text=helper_global.value("new_reply_message", "You receive a reply message.", lang=channel_lang) + "\n" + helper_global.value("target_message", "", lang=channel_lang) + "https://t.me/c/%d/%d" % (link_id, target_msg_id) 
+                            )
 
     return helper_database.add_record(channel_id, msg_id, username, name, msg_type, msg_content, media_id, date, user_id, ori_msg_id)
 
