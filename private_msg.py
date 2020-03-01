@@ -320,7 +320,11 @@ def private_msg(bot, update):
                 text=helper_global.value("new_comment_message", "You have a new comment message.", lang=channel_lang) + "\n" + helper_global.value("target_message", "", lang=channel_lang) + "https://t.me/%s/%d" % (username, msg_id) 
             )
         else:
-            bot.send_message(chat_id=admin_id, text=helper_global.value("new_comment_message", "You have a new comment message.", lang=channel_lang))
+            link_id = abs(channel_id) % 10000000000
+            bot.send_message(
+                chat_id=admin_id, 
+                text=helper_global.value("new_comment_message", "You have a new comment message.", lang=channel_lang) + "\n" + helper_global.value("target_message", "", lang=channel_lang) + "https://t.me/c/%d/%d" % (link_id, msg_id) 
+            )
 
     if result == 0:
         bot.send_message(chat_id=chat_id, text=helper_global.value("comment_success", "Success!", lang=channel_lang))

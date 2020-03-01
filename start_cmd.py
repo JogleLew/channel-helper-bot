@@ -54,9 +54,10 @@ def start(bot, update, args):
                 reply_markup=motd_markup
             )
         else:
+            link_id = abs(channel_id) % 10000000000
             bot.send_message(
                 chat_id=update.message.chat_id, 
-                text=helper_global.value("start_comment_mode", "", lang=channel_lang),
+                text=helper_global.value("start_comment_mode", "", lang=channel_lang) + "\n" + helper_global.value("target_message", "", lang=channel_lang) + "https://t.me/c/%d/%d" % (link_id, msg_id),
                 reply_markup=motd_markup
             )
     elif params[0] == "show":
