@@ -173,7 +173,7 @@ def deforward(bot, msg, lang):
         new_msg = bot.send_audio(
             chat_id=chat_id,
             audio=msg.audio.file_id,
-            caption=parse_entity(avoidNone(msg.caption), msg.entities) + '\n\n' + forward_info,
+            caption=parse_entity(avoidNone(msg.caption), msg.caption_entities) + '\n\n' + forward_info,
             parse_mode='HTML',
             disable_notification=True
         ).result()
@@ -181,7 +181,7 @@ def deforward(bot, msg, lang):
         new_msg = bot.send_document(
             chat_id=chat_id,
             document=msg.document.file_id,
-            caption=parse_entity(avoidNone(msg.caption), msg.entities) + '\n\n' + forward_info,
+            caption=parse_entity(avoidNone(msg.caption), msg.caption_entities) + '\n\n' + forward_info,
             parse_mode='HTML',
             disable_notification=True
         ).result()
@@ -189,7 +189,7 @@ def deforward(bot, msg, lang):
         new_msg = bot.send_photo(
             chat_id=chat_id,
             photo=msg.photo[-1].file_id,
-            caption=parse_entity(avoidNone(msg.caption), msg.entities) + '\n\n' + forward_info,
+            caption=parse_entity(avoidNone(msg.caption), msg.caption_entities) + '\n\n' + forward_info,
             parse_mode='HTML',
             disable_notification=True
         ).result()
@@ -203,7 +203,7 @@ def deforward(bot, msg, lang):
         new_msg = bot.send_video(
             chat_id=chat_id,
             video=msg.video.file_id,
-            caption=parse_entity(avoidNone(msg.caption), msg.entities) + '\n\n' + forward_info,
+            caption=parse_entity(avoidNone(msg.caption), msg.caption_entities) + '\n\n' + forward_info,
             parse_mode='HTML',
             disable_notification=True
         ).result()
@@ -211,7 +211,7 @@ def deforward(bot, msg, lang):
         new_msg = bot.send_voice(
             chat_id=chat_id,
             voice=msg.voice.file_id,
-            caption=parse_entity(avoidNone(msg.caption), msg.entities) + '\n\n' + forward_info,
+            caption=parse_entity(avoidNone(msg.caption), msg.caption_entities) + '\n\n' + forward_info,
             parse_mode='HTML',
             disable_notification=True
         ).result()
