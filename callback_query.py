@@ -129,11 +129,11 @@ def msg_detail(bot, update, chat_id, origin_message_id, args):
             ),
             InlineKeyboardButton(
                 helper_global.value("unban_user", "Unban User", lang=channel_lang),
-                callback_data="user_unban,%d,%d,%s,%d,%d" % (channel_id, user_id, name, msg_id, row_id)
+                callback_data="user_unban,%d,%d,%s,%d,%d" % (channel_id, user_id, "", msg_id, row_id)
             ) if helper_database.check_ban(channel_id, user_id) else \
             InlineKeyboardButton(
                 helper_global.value("ban_user", "Ban User", lang=channel_lang),
-                callback_data="user_ban,%d,%d,%s,%d,%d" % (channel_id, user_id, name, msg_id, row_id)
+                callback_data="user_ban,%d,%d,%s,%d,%d" % (channel_id, user_id, "", msg_id, row_id)
             )
         ]
     ] if str(chat_id) == str(admin_id) else []

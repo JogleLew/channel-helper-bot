@@ -207,6 +207,8 @@ def delete_reflect(chat_id, msg_id):
 
 
 def add_record(channel_id, msg_id, username, name, msg_type, msg_content, media_id, date, user_id, ori_msg_id):
+    if len(name) > 15:
+        name = name[:15] + "..."
     script = "SELECT * FROM record WHERE user_id = ? AND ori_msg_id = ?"
     params = [str(user_id), str(ori_msg_id)]
     result = list(execute(script, params))
