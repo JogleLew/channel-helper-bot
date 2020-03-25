@@ -318,17 +318,34 @@ def private_msg(bot, update):
             "admin_id": admin_id,
             "action": "notify channel owner"
         }, tag="private", log_level=80)
+        reply_markup = [[
+            InlineKeyboardButton(
+                helper_global.value(
+                    "add_comment", "Add Comment", lang=channel_lang),
+                url="http://telegram.me/%s?start=add_%d_%d" %
+                (helper_global.value('bot_username', ''), channel_id, msg_id)),
+        ]]
         if username is not None:
             bot.send_message(
-                chat_id=admin_id, 
-                text=helper_global.value("new_comment_message", "You have a new comment message.", lang=channel_lang) + "\n" + helper_global.value("target_message", "", lang=channel_lang) + "https://t.me/%s/%d" % (username, msg_id) 
-            )
+                chat_id=admin_id,
+                text=helper_global.value(
+                    "new_comment_message",
+                    "You have a new comment message.",
+                    lang=channel_lang) + "\n---\n" +message+"\n---\n"+
+                helper_global.value("target_message", "", lang=channel_lang) +
+                "https://t.me/%s/%d" % (username, msg_id),
+                reply_markup=reply_markup)
         else:
             link_id = abs(channel_id) % 10000000000
             bot.send_message(
-                chat_id=admin_id, 
-                text=helper_global.value("new_comment_message", "You have a new comment message.", lang=channel_lang) + "\n" + helper_global.value("target_message", "", lang=channel_lang) + "https://t.me/c/%d/%d" % (link_id, msg_id) 
-            )
+                chat_id=admin_id,
+                text=helper_global.value(
+                    "new_comment_message",
+                    "You have a new comment message.",
+                    lang=channel_lang) + "\n---\n" + message + "\n---\n" +
+                helper_global.value("target_message", "", lang=channel_lang) +
+                "https://t.me/c/%d/%d" % (link_id, msg_id),
+                reply_markup=reply_markup)
 
     if result == 0:
         bot.send_message(chat_id=chat_id, text=helper_global.value("comment_success", "Success!", lang=channel_lang))
