@@ -111,6 +111,9 @@ def parse_entity(src, entity_list):
         elif entity.type == 'italic':
             begin_str = '<i>'
             end_str = '</i>'
+        elif entity.type == 'strikethrough':
+            begin_str = '<del>'
+            end_str = '</del>'
         elif entity.type == 'pre':
             begin_str = '<pre>'
             end_str = '</pre>'
