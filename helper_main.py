@@ -13,7 +13,7 @@ import helper_global
 import helper_database
 import telegram
 import telegram.bot
-from telegram.ext import messagequeue as mq
+import messagequeue as mq
 from telegram.ext import Updater, CommandHandler
 from telegram.utils.request import Request
 from ninesix import Logger
