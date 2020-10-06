@@ -161,7 +161,7 @@ def bot_reload(bot, update):
         command_module = []
         for module_name in helper_const.MODULE_NAME:
             logger.msg("Reloading module \"%s\"..." % module_name, tag="main", log_level=100)
-            current_module = importlib.import_module(module_name)
+            current_module = importlib.import_module("modules." + module_name)
             current_module = importlib.reload(current_module)
             command_module.append(current_module)
             dispatcher.add_handler(current_module._handler)
@@ -180,7 +180,7 @@ dispatcher.add_handler(reload_handler)
 command_module = []
 for module_name in helper_const.MODULE_NAME:
     logger.msg("Loading module \"%s\"..." % module_name, tag="main", log_level=100)
-    current_module = importlib.import_module(module_name)
+    current_module = importlib.import_module("modules." + module_name)
     command_module.append(current_module)
     dispatcher.add_handler(current_module._handler)
 
