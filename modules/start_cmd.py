@@ -35,6 +35,7 @@ def start(bot, update, args):
     recent, username = config[3], config[4]
 
     if helper_database.check_ban(channel_id, chat_id):
+        helper_global.assign(str(chat_id) + "_status", "0,0")
         bot.send_message(chat_id=update.message.chat_id, text=helper_global.value("banned_prompt", "You are banned.", lang=channel_lang))
         return
 
