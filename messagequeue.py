@@ -29,6 +29,7 @@ import functools
 import time
 import threading
 import queue as q
+import uuid
 from datetime import datetime
 from ninesix import Logger
 
@@ -82,6 +83,7 @@ class DelayPriorityQueue(threading.Thread):
         self._queue = queue if queue is not None else q.PriorityQueue()
         self.prior_dict = {}
         self.prior_date = datetime.today().strftime("%Y-%m-%d")
+        self.lock = threading.Lock()
         self.burst_limit = burst_limit
         self.time_limit = time_limit_ms / 1000
         self.exc_route = (exc_route if exc_route is not None else self._default_exception_handler)
@@ -121,7 +123,7 @@ class DelayPriorityQueue(threading.Thread):
                 time.sleep(times[1] - t_delta)
             # finally process one
             try:
-                priority, func, args, kwargs = item
+                priority, uuid, func, args, kwargs = item
                 func(*args, **kwargs)
             except Exception as exc:  # re-route any exceptions
                 self.exc_route(exc)  # to prevent thread exit
@@ -168,18 +170,23 @@ class DelayPriorityQueue(threading.Thread):
         current_date = datetime.today().strftime("%Y-%m-%d")
         if current_date != self.prior_date:
             self.prior_date = current_date
+            self.lock.acquire()
             self.prior_dict = {}
+            self.lock.release()
         channel_id = func.kwargs.get("chat_id", 0) if "chat_id" in func.kwargs else (func.args[0] if len(func.args) > 0 else 0)
         channel_id = str(channel_id)
+        self.lock.acquire()
         if not channel_id in self.prior_dict:
             self.prior_dict[channel_id] = 0
         self.prior_dict[channel_id] += 1
+        priority = self.prior_dict[channel_id]
+        self.lock.release()
         logger = Logger.logger
         logger.msg({
             "channel_id": channel_id,
-            "priority": self.prior_dict[channel_id]
+            "priority": priority
         }, tag="queue", log_level=20)
-        self._queue.put((self.prior_dict[channel_id], func, args, kwargs))
+        self._queue.put((priority, uuid.uuid1(), func, args, kwargs))
 
 
 # The most straightforward way to implement this is to use 2 sequential delay

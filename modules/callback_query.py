@@ -7,8 +7,8 @@
 import helper_const
 import helper_global
 import helper_database
-import modules.option_cmd
-import modules.private_msg
+import modules.option_cmd as option_cmd
+import modules.private_msg as private_msg
 import telegram
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, \
         InputMediaAudio, InputMediaDocument, InputMediaPhoto, InputMediaVideo
