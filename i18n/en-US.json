@@ -62,5 +62,6 @@
     "like_recorded": "You %s it.",
     "comment_refreshing": "Refreshing...",
     "reply_to": "Reply to ",
-    "reply_prompt": "Write comment first, then choose a comment to reply."
+    "reply_prompt": "Write comment first, then choose a comment to reply.",
+    "jump_to_comment": "Go to Comments"
 }

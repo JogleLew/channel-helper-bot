@@ -157,6 +157,14 @@ def update_comments(bot, channel_id, msg_id, update_mode):
                 callback_data="like,%s,%s,%d" % (channel_id, msg_id, idx)
             )
         for idx, value in enumerate(buttons)]]
+        if comment_id - msg_id > 1:
+            link_id = abs(channel_id) % 10000000000
+            motd_keyboard += [[
+                InlineKeyboardButton(
+                    helper_global.value("jump_to_comment", "Jump to Comment", lang=channel_lang),
+                    url="https://t.me/c/%d/%d" % (link_id, comment_id)
+                )
+            ]]
         motd_markup = InlineKeyboardMarkup(motd_keyboard)
         bot.edit_message_reply_markup(
             chat_id=channel_id,

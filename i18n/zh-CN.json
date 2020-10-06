@@ -62,5 +62,6 @@
     "like_recorded": "您觉得这很 %s",
     "comment_refreshing": "评论区刷新中...",
     "reply_to": "回复 ",
-    "reply_prompt": "先填写回复信息，再选择需要回复的评论"
+    "reply_prompt": "先填写回复信息，再选择需要回复的评论",
+    "jump_to_comment": "跳转到评论区"
 }
