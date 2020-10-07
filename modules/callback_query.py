@@ -446,10 +446,10 @@ def reaction(bot, update, chat_id, origin_message_id, user_id, args):
     config = helper_database.get_channel_config(channel_id)
     if config is None:
         return
-    channel_lang = config[1]
+    channel_lang, mode = config[1], config[2]
     buttons = helper_database.get_button_options(channel_id, msg_id)
     helper_database.add_reaction(channel_id, msg_id, user_id, like_id)
-    private_msg.update_dirty_msg(channel_id, msg_id, update_mode=0)
+    private_msg.update_dirty_msg(channel_id, msg_id, update_mode=(2 if mode == 3 else 0))
     bot.answer_callback_query(
         callback_query_id=update.callback_query.id,
         text=helper_global.value("like_recorded", "", lang=channel_lang) % buttons[like_id]

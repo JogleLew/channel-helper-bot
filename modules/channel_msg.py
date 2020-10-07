@@ -110,6 +110,57 @@ def add_compact_comment(bot, chat_id, config, message_id, message):
         pass
 
 
+def add_inplace_comment(bot, chat_id, config, message_id, message, buttons):
+    logger = Logger.logger
+    logger.msg({
+        "channel_id": chat_id,
+        "msg_id": message_id,
+        "action": "inplace comment"
+    }, tag="channel", log_level=80)
+    channel_lang = config[1]
+
+    # Fallback media group message
+    if message.media_group_id:
+        return
+
+    if message.forward_from or message.forward_from_chat:
+        new_message = deforward(bot, message, channel_lang)
+        message_id = new_message.message_id
+        message = new_message
+
+    # Prepare Keyboard
+    if buttons and len(buttons) > 0:
+        helper_database.add_button_options(chat_id, message_id, buttons)
+        helper_database.clear_reaction(chat_id, message_id)
+
+    motd_keyboard = [[
+        InlineKeyboardButton(
+            value,
+            callback_data="like,%s,%s,%d" % (chat_id, message_id, idx)
+        )
+    for idx, value in enumerate(buttons)]] + ([[
+        InlineKeyboardButton(
+            helper_global.value("add_comment", "Add Comment", lang=channel_lang),
+            url="http://telegram.me/%s?start=add_%d_%d" % (helper_global.value('bot_username', ''), chat_id, message_id)
+        ), 
+        InlineKeyboardButton(
+            helper_global.value("show_all_comments", "Show All", lang=channel_lang),
+            url="http://telegram.me/%s?start=show_%s_%d" % (helper_global.value('bot_username', ''), chat_id, message_id)
+        )
+    ]])
+    motd_markup = InlineKeyboardMarkup(motd_keyboard)
+
+    try:
+        bot.edit_message_reply_markup(
+            chat_id=chat_id,
+            message_id=message_id,
+            reply_markup=motd_markup
+        ).result()
+    except:
+        return
+    helper_database.add_reflect(chat_id, message_id, avoidNone(message.caption if message.caption else message.text))
+
+
 def avoidNone(s):
     if s:
         return str(s)
@@ -354,6 +405,15 @@ def channel_post_msg(bot, update):
             add_like_buttons(bot, lang, config, chat_id, message_id, message, helper_database.get_default_button_options(chat_id))
         else:
             add_compact_comment(bot, chat_id, config, message_id, message)
+    elif mode == 3:
+        logger.msg({
+            "channel_id": chat_id,
+            "msg_id": message_id,
+            "mode": mode,
+            "button": button_mode,
+            "action": "new channel post"
+        }, tag="channel", log_level=90)
+        add_inplace_comment(bot, chat_id, config, message_id, message, (helper_database.get_default_button_options(chat_id) if button_mode == 1 else []))
 
 
 class FilterChannelPost(BaseFilter):

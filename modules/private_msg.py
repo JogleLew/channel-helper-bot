@@ -115,6 +115,49 @@ def update_comments(bot, channel_id, msg_id, update_mode):
         "update_mode": update_mode
     }, tag="private", log_level=80)
 
+    # For mode 3
+    if mode == 3 and update_mode == 2:
+        buttons = helper_database.get_button_options(channel_id, msg_id)
+        stat = helper_database.get_reaction_stat(channel_id, msg_id)
+        # Prepare Keyboard
+        motd_keyboard = [[
+            InlineKeyboardButton(
+                value + (" (%d)" % stat[idx] if idx in stat else ""),
+                callback_data="like,%s,%s,%d" % (channel_id, msg_id, idx)
+            )
+        for idx, value in enumerate(buttons)]] + [[
+            InlineKeyboardButton(
+                helper_global.value("add_comment", "Add Comment", lang=channel_lang),
+                url="http://telegram.me/%s?start=add_%d_%d" % (helper_global.value('bot_username', ''), channel_id, msg_id)
+            ),
+            InlineKeyboardButton(
+                helper_global.value("show_all_comments", "Show All", lang=channel_lang),
+                url="http://telegram.me/%s?start=show_%s_%d" % (helper_global.value('bot_username', ''), channel_id, msg_id)
+            )
+        ]]
+        motd_markup = InlineKeyboardMarkup(motd_keyboard)
+
+        records = helper_database.get_recent_records(channel_id, msg_id, recent)
+        origin_post = helper_database.get_origin_post(channel_id, msg_id)
+
+        try:
+            bot.edit_message_caption(
+                caption=origin_post + "\n\n" + helper_global.records_to_str(records, channel_lang), 
+                chat_id=channel_id, 
+                message_id=msg_id, 
+                parse_mode=telegram.ParseMode.HTML,
+                reply_markup=motd_markup
+            )
+        except:
+            bot.edit_message_text(
+                text=origin_post + "\n\n" + helper_global.records_to_str(records, channel_lang), 
+                chat_id=channel_id, 
+                message_id=msg_id, 
+                parse_mode=telegram.ParseMode.HTML,
+                reply_markup=motd_markup
+            )
+        return
+        
     # update comments in channel
     comment_id = helper_database.get_comment_id(channel_id, msg_id)
     if comment_id is None:
@@ -284,7 +327,7 @@ def private_msg(bot, update):
     if config is None:
         return
     channel_lang = config[1]
-    recent, username, admin_id, notify = config[3], config[4], config[5], config[6]
+    mode, recent, username, admin_id, notify = config[2], config[3], config[4], config[5], config[6]
     logger.msg({
         "user_id": chat_id,
         "channel_id": channel_id,
@@ -293,7 +336,7 @@ def private_msg(bot, update):
     }, tag="private", log_level=90)
 
     # For Auto Mode = 2
-    if not comment_exist:
+    if mode == 2 and not comment_exist:
         logger.msg({
             "user_id": chat_id,
             "channel_id": channel_id,
@@ -317,7 +360,7 @@ def private_msg(bot, update):
     result = add_record(bot, channel_id, msg_id, message)
 
     # Update Dirty List
-    update_dirty_msg(channel_id, msg_id)
+    update_dirty_msg(channel_id, msg_id, update_mode=(2 if mode == 3 else 1))
     if notify == 1 and not int(chat_id) == int(admin_id):
         logger.msg({
             "user_id": chat_id,

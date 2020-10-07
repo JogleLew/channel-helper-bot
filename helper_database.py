@@ -234,6 +234,16 @@ def get_comment_id(channel_id, msg_id):
     return comment_id
 
 
+def get_origin_post(channel_id, msg_id):
+    script = "SELECT comment_id FROM reflect WHERE chat_id = ? and msg_id = ?"
+    params = [str(channel_id), str(msg_id)]
+    result = list(execute(script, params))
+    if len(result) == 0:
+        return None
+    comment_id = result[0][0]
+    return comment_id
+
+
 def get_recent_records(channel_id, msg_id, recent, offset=0):
     script = "SELECT *, ROWID FROM record WHERE chat_id = ? and msg_id = ? ORDER BY date DESC LIMIT ? OFFSET ?"
     params = [str(channel_id), str(msg_id), recent, offset * recent]
