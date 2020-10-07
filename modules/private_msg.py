@@ -336,7 +336,7 @@ def private_msg(bot, update):
     }, tag="private", log_level=90)
 
     # For Auto Mode = 2
-    if mode == 2 and not comment_exist:
+    if not comment_exist:
         logger.msg({
             "user_id": chat_id,
             "channel_id": channel_id,
