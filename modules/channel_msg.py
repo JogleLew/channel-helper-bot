@@ -417,6 +417,7 @@ def channel_post_msg(bot, update):
 
 
 class FilterChannelPost(BaseFilter):
+#python-telegram-bot大于13.0时请把419行“class FilterChannelPost(BaseFilter):”替换为“class FilterChannelPost(MessageFilter):”
     def filter(self, message):
         return message.chat.type == "channel"
 
