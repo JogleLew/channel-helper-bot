@@ -9,7 +9,11 @@ import helper_global
 import helper_database
 import telegram
 from telegram.utils.helpers import effective_message_type
-from telegram.ext import MessageHandler, Filters, BaseFilter
+from telegram.ext import MessageHandler, Filters
+if telegram.__version__ < '13.0':
+    from telegram.ext import BaseFilter
+else:
+    from telegram.ext import MessageFilter as BaseFilter
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from ninesix import Logger
 
