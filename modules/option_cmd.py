@@ -8,7 +8,6 @@ import helper_const
 import helper_global
 import helper_database
 import telegram
-import telegram
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CommandHandler
 from ninesix import Logger
