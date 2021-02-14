@@ -160,7 +160,6 @@ def msg_detail(bot, update, chat_id, origin_message_id, args):
     if msg_type == "text":
         bot.send_message(
             chat_id=chat_id, 
-            message_id=origin_message_id,
             text=msg_content,
             parse_mode='HTML',
             reply_markup=motd_markup
@@ -192,7 +191,6 @@ def msg_detail(bot, update, chat_id, origin_message_id, args):
     else:
         bot.send_message(
             chat_id=chat_id, 
-            message_id=origin_message_id,
             text="[%s] %s" % (msg_type, msg_content),
             parse_mode='HTML',
             reply_markup=motd_markup
