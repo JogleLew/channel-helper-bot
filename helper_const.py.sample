@@ -4,12 +4,13 @@
 """ Channel Helper Bot """
 """ helper_const.py """
 """ Copyright 2018, Jogle Lew """
+import os
 
 BOT_TOKEN = 'Bot Token Here'
 BOT_OWNER = [Bot Owner 1 UserID, Bot Owner 2 UserID]
 MIN_REFRESH_INTERVAL = 3
 MODULE_NAME = ['start_cmd', 'help_cmd', 'cancel_cmd', 'sql_cmd', 'clean_cmd', 'register_cmd', 'option_cmd', 'channel_msg', 'private_msg', 'callback_query', 'inline_query']
-DATABASE_DIR = "."
+DATABASE_DIR = os.path.dirname(os.path.realpath(__file__))
 DEFAULT_LANG = "zh-CN"
 LANG_LIST = ["zh-CN", "pt-BR", "en-US"]
 LANG_WIDTH = 3
