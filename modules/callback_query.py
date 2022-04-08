@@ -14,6 +14,7 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup, \
         InputMediaAudio, InputMediaDocument, InputMediaPhoto, InputMediaVideo
 from telegram.ext import CallbackQueryHandler
 from ninesix import Logger
+from modules.user_check import is_creator
 
 def show_msg(bot, update, origin_message_id, chat_id, args):
     channel_id = int(args[1])
@@ -136,7 +137,7 @@ def msg_detail(bot, update, chat_id, origin_message_id, args):
                 callback_data="user_ban,%d,%d,%s,%d,%d" % (channel_id, user_id, "", msg_id, row_id)
             )
         ]
-    ] if str(chat_id) == str(admin_id) else []
+    ] if str(chat_id) == str(admin_id) or is_creator(bot, channel_id, chat_id) else []
     motd_keyboard = msg_from_button + admin_operation_button + [
         [
             InlineKeyboardButton(

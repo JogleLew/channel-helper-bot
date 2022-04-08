@@ -56,6 +56,7 @@
     "user_banned_failed": "Failed to ban this user. This user might have been banned.",
     "user_unbanned": "User unbanned.",
     "banned_prompt": "You are not allowed to leave comments in this channel.",
+    "not_in_channel": "Please join this channel to leave comments.",
     "new_comment_message": "New comment received.",
     "new_reply_message": "New reply received.",
     "target_message": "Target message: ",

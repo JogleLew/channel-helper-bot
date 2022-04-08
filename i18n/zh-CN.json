@@ -56,6 +56,7 @@
     "user_banned_failed": "封禁失败，该用户可能已被封禁",
     "user_unbanned": "用户已解封",
     "banned_prompt": "频道管理员不允许你进行评论操作",
+    "not_in_channel": "请先加入本频道以使用评论功能。",
     "new_comment_message": "您收到了新的评论",
     "new_reply_message": "您收到了一条评论回复",
     "target_message": "目标消息：",
