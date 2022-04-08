@@ -56,6 +56,7 @@
     "user_banned_failed": "Falha ao banir este usuário. Este usuário pode já ter sido banido.",
     "user_unbanned": "Usuário desbanido.",
     "banned_prompt": "Você não tem permissão para comentar neste canal.",
+    "not_in_channel": "Por favor, junte-se a este canal para deixar comentários.",
     "new_comment_message": "Novo comentário recebido.",
     "new_reply_message": "Nova resposta recebida.",
     "target_message": "Mensagem de destino: ",

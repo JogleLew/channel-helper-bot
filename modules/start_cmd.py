@@ -11,6 +11,7 @@ import telegram
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CommandHandler
 from ninesix import Logger
+from modules.user_check import in_channel
 
 def start(bot, update, args):
     logger = Logger.logger
@@ -37,6 +38,11 @@ def start(bot, update, args):
     if helper_database.check_ban(channel_id, chat_id):
         helper_global.assign(str(chat_id) + "_status", "0,0")
         bot.send_message(chat_id=update.message.chat_id, text=helper_global.value("banned_prompt", "You are banned.", lang=channel_lang))
+        return
+
+    if not in_channel(bot, channel_id, chat_id):
+        bot.send_message(chat_id=update.message.chat_id,
+                         text=helper_global.value("not_in_channel", "You are not in channel.", lang=channel_lang))
         return
 
     if params[0] == "add":
