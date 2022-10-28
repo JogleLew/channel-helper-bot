@@ -18,8 +18,8 @@
     "no_prev_page": "Nenhuma página anterior",
     "no_next_page": "Nenhuma página seguinte",
     "register_cmd_text": "Certifique-se de adicionar este bot ao seu canal como administrador (Configurações do canal -> Adicionar administrador -> Pesquisar nome de usuário do bot -> Clique) e conceda as permissões para o bot de enviar, editar e excluir mensagens. Em seguida, encaminhe uma mensagem do seu canal para o bot.",
-    "register_cmd_invalid": "Esta mensagem não contém informações do canal. Envie-me uma mensagem original do seu canal.",
-    "register_cmd_not_admin": "Você não é o administrador do canal, portanto não tem permissão para se registrar.",
+    "register_cmd_invalid": "Esta mensagem não contém informações do canal. Envie uma mensagem original do seu canal.",
+    "register_cmd_not_admin": "Você não é o administrador do canal, portanto, não tem permissão para se registrar.",
     "register_cmd_no_permission": "Erro na verificação de permissão. Certifique-se de conceder as permissões de enviar, editar e excluir mensagens ao bot e tente se registrar novamente.",
     "register_cmd_no_info": "Este bot não pode acessar seu canal. Verifique se o bot é um administrador do seu canal. ",
     "register_cmd_failed": "Falha no registro. Entre em contato com o desenvolvedor @JogleLew para obter ajuda.",
@@ -62,5 +62,5 @@
     "like_recorded": "Você enviou %s.",
     "comment_refreshing": "Atualizando...",
     "reply_to": "Responder para ",
-    "jump_to_comment": "Go to Comments"
+    "jump_to_comment": "Ir para os comentários"
 }
